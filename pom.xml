@@ -23,6 +23,7 @@
         <module>core</module>
         <module>scraper-Idealista</module>
         <module>scraper-FotoCasa</module>
+        <module>persistence</module>
     </modules>
 
 </project>
