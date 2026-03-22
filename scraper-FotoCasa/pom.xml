@@ -19,9 +19,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.ulpgc.dacd</groupId>
-            <artifactId>Housing_Predictor</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.17.1</version>
         </dependency>
 
         <dependency>
@@ -30,5 +30,7 @@
             <version>1.17.2</version>
         </dependency>
     </dependencies>
+
+
 
 </project>

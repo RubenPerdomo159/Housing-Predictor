@@ -1,6 +1,7 @@
 package org.ulpgc.dacd;
 
 public class IdealistaProperty {
+
     public String precio;
     public String metros;
     public String habitaciones;
@@ -10,6 +11,11 @@ public class IdealistaProperty {
 
     @Override
     public String toString() {
-        return precio + " | " + metros + " | " + habitaciones + " | " + planta + " | " + ubicacion;
+        return "Precio: " + precio +
+                " | Metros: " + metros +
+                " | Habitaciones: " + habitaciones +
+                " | Planta: " + planta +
+                " | Ubicación: " + ubicacion +
+                " | URL: " + url;
     }
 }
