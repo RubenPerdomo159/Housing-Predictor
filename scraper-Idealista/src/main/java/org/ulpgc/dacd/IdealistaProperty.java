@@ -1,21 +1,15 @@
 package org.ulpgc.dacd;
 
 public class IdealistaProperty {
-
-    public String precio;
-    public String metros;
-    public String habitaciones;
-    public String planta;
+    public double precio;
+    public double metros;
+    public int habitaciones;
     public String ubicacion;
     public String url;
 
     @Override
     public String toString() {
-        return "Precio: " + precio +
-                " | Metros: " + metros +
-                " | Habitaciones: " + habitaciones +
-                " | Planta: " + planta +
-                " | Ubicación: " + ubicacion +
-                " | URL: " + url;
+        return String.format("Precio: %.0f€ | Metros: %.0fm² | Habitaciones: %d | Ubicación: %s | URL: %s",
+                precio, metros, habitaciones, ubicacion, url);
     }
 }

@@ -12,8 +12,11 @@ public class IdealistaLocationService {
 
     public String getLocationId(String prefix) throws Exception {
 
-        String url = "https://idealista7.p.rapidapi.com/auto-complete?prefix="
-                + prefix + "&location=es&propertyType=homes";
+        String url = "https://idealista7.p.rapidapi.com/getsuggestions?"
+                + "prefix=" + prefix.replace(" ", "%20")
+                + "&location=es"
+                + "&propertyType=homes"
+                + "&operation=sale";
 
         String json = api.get(url);
 

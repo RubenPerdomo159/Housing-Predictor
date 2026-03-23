@@ -14,14 +14,18 @@ public class IdealistaPropertyService {
     }
 
     public List<IdealistaProperty> getProperties(String locationId, int page) throws Exception {
-
-        String url = "https://idealista7.p.rapidapi.com/properties/list?"
+        // listcommercialproperties funciona perfe
+        String url = "https://idealista7.p.rapidapi.com/listcommercialproperties?"
                 + "locationId=" + locationId
                 + "&numPage=" + page
-                + "&maxItems=40";
+                + "&maxItems=40"
+                + "&operation=sale"
+                + "&location=es"
+                + "&locale=es"
+                + "&order=relevance"
+                + "&locationName=Las%20Palmas%20de%20Gran%20Canaria";
 
         String json = api.get(url);
-
         JsonObject root = JsonParser.parseString(json).getAsJsonObject();
         JsonArray list = root.getAsJsonArray("elementList");
 
@@ -30,17 +34,24 @@ public class IdealistaPropertyService {
         for (JsonElement el : list) {
             JsonObject obj = el.getAsJsonObject();
 
-            IdealistaProperty p = new IdealistaProperty();
+            IdealistaProperty p = new IdealistaProperty(); // ✅ Ahora sí tiene constructor vacío
 
-            p.precio = obj.get("price").getAsString();
-            p.metros = obj.get("size").getAsString();
-            p.habitaciones = obj.get("rooms").getAsString();
-            p.ubicacion = obj.get("address").getAsString();
-            p.url = "https://www.idealista.com" + obj.get("url").getAsString();
-
+            if (obj.has("priceInfo") && obj.getAsJsonObject("priceInfo").has("price")) {
+                p.precio = obj.getAsJsonObject("priceInfo")
+                        .getAsJsonObject("price")
+                        .get("amount").getAsDouble();
+            } else {
+                p.precio = 0;
+            }
+            p.metros      = obj.has("size")    ? obj.get("size").getAsDouble()    : 0;
+            p.habitaciones = obj.has("rooms")  ? obj.get("rooms").getAsInt()      : 0;
+            p.ubicacion   = obj.has("address") ? obj.get("address").getAsString() : "N/A";
+            p.url = obj.has("url") ? obj.get("url").getAsString() : "";
             results.add(p);
         }
 
         return results;
+
+
     }
 }
