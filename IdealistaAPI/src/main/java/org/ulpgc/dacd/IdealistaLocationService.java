@@ -20,9 +20,14 @@ public class IdealistaLocationService {
 
         String json = api.get(url);
 
+
+
+
+
+
         JsonObject root = JsonParser.parseString(json).getAsJsonObject();
         JsonArray locations = root.getAsJsonArray("locations");
-
+        System.out.println("JSON: " + json); // ← añade esto
         return locations.get(0).getAsJsonObject().get("locationId").getAsString();
     }
 }

@@ -12,7 +12,9 @@ public class Main {
 
         System.out.println("Location ID: " + locationId);
 
-        var properties = prop.getProperties(locationId, 1);
-        properties.forEach(System.out::println);
+
+
+        var properties = prop.getProperties("0-EU-ES-35-01-001-016", "Las Palmas de Gran Canaria", 1);
+        System.out.println(properties.getFirst());
     }
 }
