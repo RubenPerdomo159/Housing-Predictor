@@ -15,7 +15,7 @@ public class IdealistaPropertyService {
 
     public List<IdealistaProperty> getProperties(String locationId, int page) throws Exception {
         // listcommercialproperties funciona perfe
-        String url = "https://idealista7.p.rapidapi.com/listcommercialproperties?"
+        String url = "https://idealista7.p.rapidapi.com/listhomes?"
                 + "locationId=" + locationId
                 + "&numPage=" + page
                 + "&maxItems=40"
@@ -37,14 +37,12 @@ public class IdealistaPropertyService {
             IdealistaProperty p = new IdealistaProperty(); // ✅ Ahora sí tiene constructor vacío
 
             if (obj.has("priceInfo") && obj.getAsJsonObject("priceInfo").has("price")) {
-                p.precio = obj.getAsJsonObject("priceInfo")
-                        .getAsJsonObject("price")
-                        .get("amount").getAsDouble();
+                p.precio = obj.has("price") ? obj.get("price").getAsDouble() : 0;
             } else {
                 p.precio = 0;
             }
             p.metros      = obj.has("size")    ? obj.get("size").getAsDouble()    : 0;
-            p.habitaciones = obj.has("rooms")  ? obj.get("rooms").getAsInt()      : 0;
+            p.habitaciones = obj.has("rooms") ? obj.get("rooms").getAsInt() : 0;
             p.ubicacion   = obj.has("address") ? obj.get("address").getAsString() : "N/A";
             p.url = obj.has("url") ? obj.get("url").getAsString() : "";
             results.add(p);
