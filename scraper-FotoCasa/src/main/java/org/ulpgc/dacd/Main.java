@@ -1,10 +1,12 @@
 package org.ulpgc.dacd;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
-    public static void main(String[] args) {
-        FotocasaScraper scraper = new FotocasaScraper();
-        scraper.scrape();
+    public static void main(String[] args) throws Exception {
+
+        FotocasaScraperService scraper = new FotocasaScraperService();
+
+        var properties = scraper.getProperties(1);
+
+        properties.forEach(System.out::println);
     }
 }

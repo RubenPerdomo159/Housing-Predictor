@@ -19,7 +19,7 @@
     <modules>
         <module>app</module>
         <module>core</module>
-        <module>scraper-Idealista</module>
+        <module>IdealistaAPI</module>
         <module>scraper-FotoCasa</module>
         <module>persistence</module>
     </modules>
