@@ -22,6 +22,7 @@
         <module>IdealistaAPI</module>
         <module>scraper-FotoCasa</module>
         <module>persistence</module>
+        <module>OpenStreetMap-API</module>
     </modules>
 
 </project>

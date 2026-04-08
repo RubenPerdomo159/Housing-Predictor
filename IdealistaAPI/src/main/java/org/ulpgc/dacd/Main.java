@@ -1,3 +1,5 @@
+package org.ulpgc.dacd;
+
 import org.ulpgc.dacd.IdealistaApiClient;
 import org.ulpgc.dacd.IdealistaPropertyService;
 
@@ -14,7 +16,7 @@ public class Main {
 
 
 
-        var properties = prop.getProperties("0-EU-ES-35-01-001-016", "Las Palmas de Gran Canaria", 1);
+        var properties = prop.getProperties("0-EU-ES-35-01-001-016", "Las Palmas de Gran Canaria", 3);
         System.out.println(properties.getFirst());
     }
 }
