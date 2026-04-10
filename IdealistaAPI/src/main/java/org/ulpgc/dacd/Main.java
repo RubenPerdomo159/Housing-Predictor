@@ -1,7 +1,7 @@
 package org.ulpgc.dacd;
 
-import org.ulpgc.dacd.IdealistaApiClient;
-import org.ulpgc.dacd.IdealistaPropertyService;
+import org.ulpgc.dacd.feeder.IdealistaApiClient;
+import org.ulpgc.dacd.feeder.IdealistaPropertyService;
 
 public class Main {
     public static void main(String[] args) throws Exception {

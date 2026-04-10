@@ -1,6 +1,7 @@
-package org.ulpgc.dacd;
+package org.ulpgc.dacd.feeder;
 
 import com.google.gson.*;
+import org.ulpgc.dacd.model.IdealistaProperty;
 
 import java.util.ArrayList;
 import java.util.List;
