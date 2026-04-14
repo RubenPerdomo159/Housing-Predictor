@@ -1,7 +1,8 @@
-package org.ulpgc.dacd;
+package org.ulpgc.dacd.feeder;
 
 import com.microsoft.playwright.*;
 import com.microsoft.playwright.options.LoadState;
+import org.ulpgc.dacd.model.FotocasaProperty;
 
 import java.util.ArrayList;
 import java.util.List;

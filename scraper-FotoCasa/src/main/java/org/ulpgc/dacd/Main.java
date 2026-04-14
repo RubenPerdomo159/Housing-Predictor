@@ -1,5 +1,7 @@
 package org.ulpgc.dacd;
 
+import org.ulpgc.dacd.feeder.FotocasaScraperService;
+
 public class Main {
     public static void main(String[] args) throws Exception {
 
