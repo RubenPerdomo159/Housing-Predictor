@@ -17,7 +17,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>IdealistaAPI</module>
+        <module>FeederIdealista</module>
         <module>scraper-FotoCasa</module>
         <module>persistence</module>
         <module>OpenStreetMap-API</module>

@@ -1,14 +1,22 @@
-package org.ulpgc.dacd.persistence;
+package org.ulpgc.dacd.controller.persistence;
 
+import java.io.File;
 import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.sql.Statement;
 
-public class DatabaseInitializer {
+public class SQLiteFotocasaPropertyStore {
 
-    public static void init() {
+    private static final String URL = "jdbc:sqlite:housing.db";
+
+
+
+    public static Connection getConnection() throws SQLException {
+        File dbFile = new File("housing.db");
+        System.out.println("Usando base de datos en: " + dbFile.getAbsolutePath());
+        return DriverManager.getConnection(URL);
     }
-
-
 
     private static void createPropertiesTable() {
         String sql = """
@@ -21,7 +29,7 @@ public class DatabaseInitializer {
             );
         """;
 
-        try (Connection conn = DatabaseConnection.getConnection();
+        try (Connection conn = getConnection();
              Statement stmt = conn.createStatement()) {
 
             stmt.execute(sql);
@@ -31,5 +39,4 @@ public class DatabaseInitializer {
             e.printStackTrace();
         }
     }
-
 }
