@@ -30,6 +30,8 @@ public class IdealistaProperty {
     public boolean hasParkingSpace;
     public boolean newDevelopment;
     public String url;
+    public String propertyCode;
+    public String capturedAt;
 
     @Override
     public String toString() {

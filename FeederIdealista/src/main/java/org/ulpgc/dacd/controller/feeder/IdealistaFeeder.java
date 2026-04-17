@@ -5,7 +5,7 @@ import org.ulpgc.dacd.model.IdealistaProperty;
 import java.util.ArrayList;
 import java.util.List;
 
-public class IdealistaFeeder implements IdealistaPropertyFeeder {
+public class IdealistaFeeder implements PropertyFeeder {
 
     private final IdealistaApiClient api;
 
@@ -35,10 +35,7 @@ public class IdealistaFeeder implements IdealistaPropertyFeeder {
         for (JsonElement el : list) {
             JsonObject obj = el.getAsJsonObject();
             IdealistaProperty p = new IdealistaProperty();
-
-            // ... vuestro parsing tal cual ...
-            // (no lo repito para no alargar)
-
+            p.propertyCode = obj.get("propertyCode").getAsString();
             results.add(p);
         }
 
