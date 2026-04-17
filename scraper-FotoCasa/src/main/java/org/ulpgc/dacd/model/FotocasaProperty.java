@@ -7,6 +7,7 @@ public class FotocasaProperty {
     public int habitaciones;
     public String ubicacion;
     public String url;
+    public String capturedAt;
 
     @Override
     public String toString() {

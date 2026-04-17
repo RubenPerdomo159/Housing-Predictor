@@ -1,42 +1,82 @@
 package org.ulpgc.dacd.controller.persistence;
 
-import java.io.File;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import org.ulpgc.dacd.model.FotocasaProperty;
+import java.sql.*;
+import java.util.List;
 
-public class SQLiteFotocasaPropertyStore {
+public class SQLiteFotocasaPropertyStore implements FotocasaPropertyStore {
 
-    private static final String URL = "jdbc:sqlite:housing.db";
+    private final Connection connection;
 
-
-
-    public static Connection getConnection() throws SQLException {
-        File dbFile = new File("housing.db");
-        System.out.println("Usando base de datos en: " + dbFile.getAbsolutePath());
-        return DriverManager.getConnection(URL);
+    public SQLiteFotocasaPropertyStore(String dbPath) throws Exception {
+        this.connection = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
+        initializeDatabase();
     }
 
-    private static void createPropertiesTable() {
-        String sql = """
-            CREATE TABLE IF NOT EXISTS properties (
+    private void initializeDatabase() throws Exception {
+        String sqlProperties = """
+            CREATE TABLE IF NOT EXISTS fotocasa_properties (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                title TEXT NOT NULL,
-                price REAL NOT NULL,
-                url TEXT NOT NULL,
-                captured_at TEXT NOT NULL
+                url TEXT UNIQUE,
+                precio REAL,
+                metros REAL,
+                habitaciones INTEGER,
+                ubicacion TEXT,
+                captured_at TEXT
             );
         """;
 
-        try (Connection conn = getConnection();
-             Statement stmt = conn.createStatement()) {
+        String sqlMetadata = """
+            CREATE TABLE IF NOT EXISTS metadata (
+                key TEXT PRIMARY KEY,
+                value TEXT
+            );
+        """;
 
-            stmt.execute(sql);
-            System.out.println("Tabla properties creada o ya existente");
+        try (Statement stmt = connection.createStatement()) {
+            stmt.execute(sqlProperties);
+            stmt.execute(sqlMetadata);
+        }
+    }
 
-        } catch (Exception e) {
-            e.printStackTrace();
+    @Override
+    public void store(List<FotocasaProperty> properties) throws Exception {
+        String sql = """
+            INSERT OR IGNORE INTO fotocasa_properties (
+                url, precio, metros, habitaciones, ubicacion, captured_at
+            ) VALUES (?, ?, ?, ?, ?, ?);
+        """;
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            for (FotocasaProperty p : properties) {
+                stmt.setString(1, p.url);
+                stmt.setDouble(2, p.precio);
+                stmt.setDouble(3, p.metros);
+                stmt.setInt(4, p.habitaciones);
+                stmt.setString(5, p.ubicacion);
+                stmt.setString(6, p.capturedAt);
+                stmt.addBatch();
+            }
+            stmt.executeBatch();
+        }
+    }
+
+    @Override
+    public int getLastPage() throws Exception {
+        String sql = "SELECT value FROM metadata WHERE key = 'last_page'";
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            if (rs.next()) return Integer.parseInt(rs.getString("value"));
+        }
+        return 0;
+    }
+
+    @Override
+    public void saveLastPage(int page) throws Exception {
+        String sql = "INSERT OR REPLACE INTO metadata (key, value) VALUES ('last_page', ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, String.valueOf(page));
+            stmt.executeUpdate();
         }
     }
 }

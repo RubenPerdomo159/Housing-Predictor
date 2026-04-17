@@ -32,22 +32,17 @@ public class FotocasaScraperService {
 
             Page pageObj = context.newPage();
 
-            // 🚀 Navegar
             pageObj.navigate(url);
 
-            // ⏳ Esperar carga
             pageObj.waitForLoadState(LoadState.NETWORKIDLE);
 
-            // 🍪 Cookies
             try {
                 pageObj.locator("button:has-text('Aceptar')").first().click();
             } catch (Exception ignored) {}
 
-            // ⏳ Esperar cards
             pageObj.waitForSelector("article",
                     new Page.WaitForSelectorOptions().setTimeout(15000));
 
-            // 📜 Scroll lazy load
             for (int i = 0; i < 6; i++) {
                 pageObj.mouse().wheel(0, 3000);
                 pageObj.waitForTimeout(1000);
@@ -59,7 +54,6 @@ public class FotocasaScraperService {
 
                 FotocasaProperty p = new FotocasaProperty();
 
-                // 💰 PRECIO
                 try {
                     ElementHandle priceEl = item.querySelector("[data-testid='price'], span:has-text('€')");
                     if (priceEl != null) {
@@ -69,23 +63,19 @@ public class FotocasaScraperService {
                     p.precio = 0;
                 }
 
-                // 🧠 TEXTO COMPLETO
                 try {
                     String text = item.innerText().toLowerCase();
 
-                    // 📐 METROS (m² o m2)
                     Matcher m2 = Pattern.compile("(\\d+)\\s*m[²2]").matcher(text);
                     if (m2.find()) {
                         p.metros = Double.parseDouble(m2.group(1));
                     }
 
-                    // 🛏 HABITACIONES
                     Matcher m3 = Pattern.compile("(\\d+)\\s*hab").matcher(text);
                     if (m3.find()) {
                         p.habitaciones = Integer.parseInt(m3.group(1));
                     }
 
-                    // 📍 UBICACIÓN REAL (filtrado fuerte)
                     String[] lines = text.split("\n");
 
                     for (String line : lines) {
@@ -94,16 +84,12 @@ public class FotocasaScraperService {
 
                         if (line.isEmpty()) continue;
 
-                        // ❌ precio
                         if (line.matches(".*\\d+\\s*€.*")) continue;
 
-                        // ❌ fechas
                         if (line.contains("hace") || line.contains("mes") || line.contains("días")) continue;
 
-                        // ❌ ranking / tags
                         if (line.contains("top") || line.contains("+")) continue;
 
-                        // ❌ ruido UI
                         if (line.contains("foto") ||
                                 line.contains("video") ||
                                 line.contains("tour") ||
@@ -116,10 +102,8 @@ public class FotocasaScraperService {
                             continue;
                         }
 
-                        // ❌ basura mínima
                         if (line.equals("·") || line.length() < 3) continue;
 
-                        // ✅ ubicación real
                         p.ubicacion = line;
                         break;
                     }
@@ -134,7 +118,6 @@ public class FotocasaScraperService {
                     p.ubicacion = "N/A";
                 }
 
-                // 🔗 URL
                 try {
                     ElementHandle linkEl = item.querySelector("a");
                     if (linkEl != null) {
@@ -147,7 +130,6 @@ public class FotocasaScraperService {
                     p.url = "";
                 }
 
-                // 🧹 FILTRO FINAL
                 if (p.precio == 0 || p.url == null || p.url.isEmpty()) {
                     continue;
                 }
@@ -161,7 +143,6 @@ public class FotocasaScraperService {
         return results;
     }
 
-    // 🔧 PARSER PRECIO
     private double parseDouble(String text) {
         return Double.parseDouble(text.replaceAll("[^0-9]", ""));
     }
