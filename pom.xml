@@ -19,8 +19,8 @@
     <modules>
         <module>FeederIdealista</module>
         <module>scraper-FotoCasa</module>
-        <module>persistence</module>
         <module>OpenStreetMap-API</module>
+        <module>EventStoreBuilder</module>
     </modules>
 
 </project>

@@ -2,15 +2,18 @@ package org.ulpgc.dacd.controller.feeder;
 
 import com.google.gson.*;
 import org.ulpgc.dacd.model.IdealistaProperty;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class IdealistaFeeder implements PropertyFeeder {
 
     private final IdealistaApiClient api;
+    private final IdealistaPublisher publisher;
 
-    public IdealistaFeeder(IdealistaApiClient api) {
+    public IdealistaFeeder(IdealistaApiClient api) throws Exception {
         this.api = api;
+        this.publisher = new IdealistaPublisher();
     }
 
     @Override
@@ -34,9 +37,19 @@ public class IdealistaFeeder implements PropertyFeeder {
 
         for (JsonElement el : list) {
             JsonObject obj = el.getAsJsonObject();
+
             IdealistaProperty p = new IdealistaProperty();
             p.propertyCode = obj.get("propertyCode").getAsString();
             results.add(p);
+
+            // Crear evento JSON
+            JsonObject event = new JsonObject();
+            event.addProperty("ts", java.time.Instant.now().toString());
+            event.addProperty("ss", "IdealistaFeeder");
+            event.add("payload", obj);
+
+            // Publicar evento
+            publisher.publish(event.toString());
         }
 
         return results;
