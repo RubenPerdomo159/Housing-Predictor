@@ -4,7 +4,6 @@ public class Event {
     private String ts;
     private String ss;
 
-    // El resto del payload se guarda como JSON crudo
     private String payload;
 
     public Event(String ts, String ss, String payload) {

@@ -42,13 +42,11 @@ public class IdealistaFeeder implements PropertyFeeder {
             p.propertyCode = obj.get("propertyCode").getAsString();
             results.add(p);
 
-            // Crear evento JSON
             JsonObject event = new JsonObject();
             event.addProperty("ts", java.time.Instant.now().toString());
             event.addProperty("ss", "IdealistaFeeder");
             event.add("payload", obj);
 
-            // Publicar evento
             publisher.publish(event.toString());
         }
 

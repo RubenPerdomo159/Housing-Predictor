@@ -18,11 +18,11 @@ public class IdealistaApiClient {
                 .addHeader("x-rapidapi-host", HOST)
                 .build();
 
-        Response response = client.newCall(request).execute();  // ✅ dentro del método
-        if (!response.isSuccessful()) {                         // ✅ dentro del método
+        Response response = client.newCall(request).execute();
+        if (!response.isSuccessful()) {
             throw new Exception("Error HTTP: " + response.code() + " - " + response.body().string());
         }
-        return response.body().string();                        // ✅ dentro del método
-    }  // ← cierre del método get()
+        return response.body().string();
+    }
 
-}  // ← cierre de la clase
+}

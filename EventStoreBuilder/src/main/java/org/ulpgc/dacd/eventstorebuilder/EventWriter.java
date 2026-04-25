@@ -15,25 +15,25 @@ public class EventWriter {
     }
 
     public void writeEvent(String topic, JsonObject event) {
-
-        // Carpeta raíz del proyecto
         String basePath = directory.getAbsolutePath();
+        String ts = event.get("ts").getAsString();
 
-        // Fecha YYYYMMDD
         LocalDate date = LocalDate.parse(ts.substring(0, 10));
         String day = date.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
-        // Ruta completa
-        String folderPath = basePath + "/eventstore/" + topic + "/" + ss;
+        String folderPath = basePath + "/eventstore/" + topic + "/" + day;
         File folder = new File(folderPath);
         folder.mkdirs();
 
         File file = new File(folderPath + "/" + day + ".events");
-
         System.out.println("Guardando en: " + file.getAbsolutePath());
+
+        String json = event.toString();
 
         try (FileWriter fw = new FileWriter(file, true)) {
             fw.write(json + "\n");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

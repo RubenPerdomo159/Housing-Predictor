@@ -19,12 +19,11 @@ public class EventConsumer {
         ActiveMQConnectionFactory factory =
                 new ActiveMQConnectionFactory(url);
         Connection connection = factory.createConnection();
-        connection.setClientID("EventStoreBuilder"); // Suscripción durable
+        connection.setClientID("EventStoreBuilder");
         connection.start();
 
         Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
-        // Suscribirse a los dos topics
         Topic idealistaTopic = session.createTopic("Idealista");
         Topic fotocasaTopic = session.createTopic("Fotocasa");
 
