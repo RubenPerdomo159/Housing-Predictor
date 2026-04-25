@@ -1,5 +1,6 @@
 package org.ulpgc.dacd.controller.feeder;
 
+import com.google.gson.*;
 import com.microsoft.playwright.*;
 import com.microsoft.playwright.options.LoadState;
 import org.ulpgc.dacd.model.FotocasaProperty;
@@ -10,6 +11,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class FotocasaScraperService {
+
+    private final FotocasaPublisher publisher;
+    private final Gson gson = new Gson();
+
+    public FotocasaScraperService() throws Exception {
+        this.publisher = new FotocasaPublisher();
+    }
 
     public List<FotocasaProperty> getProperties(int page) {
 
@@ -134,7 +142,23 @@ public class FotocasaScraperService {
                     continue;
                 }
 
+                // Añadir a la lista
                 results.add(p);
+
+                // Publicar en ActiveMQ
+                try {
+                    String json = gson.toJson(p);
+
+                    JsonObject wrapper = new JsonObject();
+                    wrapper.addProperty("ts", java.time.Instant.now().toString());
+                    wrapper.addProperty("ss", "fotocasa");
+                    wrapper.add("payload", com.google.gson.JsonParser.parseString(json));
+
+                    publisher.publish(wrapper.toString());
+
+                } catch (Exception e) {
+                    System.err.println("Error publicando propiedad: " + e.getMessage());
+                }
             }
 
             browser.close();
