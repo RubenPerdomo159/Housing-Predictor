@@ -1,5 +1,7 @@
 package org.ulpgc.dacd;
 
+import org.ulpgc.dacd.model.Place;
+
 import java.util.Map;
 
 public class OSMMapper {

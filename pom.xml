@@ -19,7 +19,7 @@
     <modules>
         <module>FeederIdealista</module>
         <module>scraper-FotoCasa</module>
-        <module>OpenStreetMap-API</module>
+        <module>FeederOpenStreetMap</module>
         <module>EventStoreBuilder</module>
     </modules>
 
