@@ -15,13 +15,16 @@ public class EventWriter {
     }
 
     public void writeEvent(String topic, JsonObject event) {
+
         String basePath = directory.getAbsolutePath();
+
         String ts = event.get("ts").getAsString();
+        String ss = event.get("ss").getAsString();
 
         LocalDate date = LocalDate.parse(ts.substring(0, 10));
         String day = date.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
-        String folderPath = basePath + "/eventstore/" + topic + "/" + day;
+        String folderPath = basePath + "/eventstore/" + topic + "/" + ss + "/" + day;
         File folder = new File(folderPath);
         folder.mkdirs();
 

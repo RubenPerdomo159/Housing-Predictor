@@ -4,6 +4,9 @@ import org.ulpgc.dacd.controller.IdealistaController;
 import org.ulpgc.dacd.controller.feeder.IdealistaApiClient;
 import org.ulpgc.dacd.controller.feeder.IdealistaFeeder;
 import org.ulpgc.dacd.controller.persistence.SQLiteIdealistaPropertyStore;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -14,6 +17,18 @@ public class Main {
                 new SQLiteIdealistaPropertyStore(dbPath)
         );
 
-        controller.execute();
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+
+        Runnable task = () -> {
+            try {
+                controller.execute();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        };
+
+        scheduler.scheduleAtFixedRate(task, 0, 30, TimeUnit.MINUTES);
+
+        System.out.println("FeederIdealista ejecutándose periódicamente...");
     }
 }

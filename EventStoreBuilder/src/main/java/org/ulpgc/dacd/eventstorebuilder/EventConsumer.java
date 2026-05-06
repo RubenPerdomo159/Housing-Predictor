@@ -16,13 +16,13 @@ public class EventConsumer {
     }
 
     public void start(BiConsumer<String, JsonObject> eventConsumer) throws Exception {
-        ActiveMQConnectionFactory factory =
-                new ActiveMQConnectionFactory(url);
+
+        ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory(url);
         Connection connection = factory.createConnection();
         connection.setClientID("EventStoreBuilder");
         connection.start();
 
-        Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        Session session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
 
         Topic idealistaTopic = session.createTopic("Idealista");
         Topic fotocasaTopic = session.createTopic("Fotocasa");
@@ -33,11 +33,12 @@ public class EventConsumer {
         MessageConsumer fotocasaConsumer =
                 session.createDurableSubscriber(fotocasaTopic, "FotocasaSub");
 
-        idealistaConsumer.setMessageListener(m->onMessage(m, eventConsumer));
-        fotocasaConsumer.setMessageListener(m->onMessage(m, eventConsumer));
+        idealistaConsumer.setMessageListener(m -> onMessage(m, eventConsumer));
+        fotocasaConsumer.setMessageListener(m -> onMessage(m, eventConsumer));
 
         System.out.println("EventStoreBuilder escuchando topics...");
     }
+
 
     public void onMessage(Message message, BiConsumer<String, JsonObject> eventConsumer) {
         try {
@@ -46,6 +47,7 @@ public class EventConsumer {
                 String json = textMessage.getText();
                 JsonObject obj = JsonParser.parseString(json).getAsJsonObject();
                 eventConsumer.accept(topic, obj);
+                message.acknowledge();
                 System.out.println("Evento recibido y guardado: " + json);
             }
         } catch (Exception e) {

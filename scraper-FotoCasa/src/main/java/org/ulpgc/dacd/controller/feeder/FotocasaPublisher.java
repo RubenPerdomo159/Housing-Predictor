@@ -18,7 +18,6 @@ public class FotocasaPublisher {
 
         this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
-        // Cambia únicamente el nombre del topic
         Topic topic = session.createTopic("Fotocasa");
         this.producer = session.createProducer(topic);
     }

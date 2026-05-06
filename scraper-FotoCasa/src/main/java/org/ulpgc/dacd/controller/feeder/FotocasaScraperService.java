@@ -151,7 +151,7 @@ public class FotocasaScraperService {
 
                     JsonObject wrapper = new JsonObject();
                     wrapper.addProperty("ts", java.time.Instant.now().toString());
-                    wrapper.addProperty("ss", "fotocasa");
+                    wrapper.addProperty("ss", "FotocasaScraper");
                     wrapper.add("payload", com.google.gson.JsonParser.parseString(json));
 
                     publisher.publish(wrapper.toString());
