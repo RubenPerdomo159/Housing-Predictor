@@ -12,4 +12,7 @@ public interface Datamart {
 
     Event getEventByPropertyCode(String code);
 
+    Object getAllNeighborhoods();
+
+    List<Event> getAllProperties();
 }

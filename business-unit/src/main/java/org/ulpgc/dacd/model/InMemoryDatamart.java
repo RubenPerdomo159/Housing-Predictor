@@ -41,13 +41,26 @@ public class InMemoryDatamart implements Datamart {
     }
 
     @Override
-    public List<Event> getPropertiesInNeighborhood(String neighborhood) {
-        return propertiesByNeighborhood.getOrDefault(neighborhood, List.of());
+    public Event getEventByPropertyCode(String code) {
+        return eventsByPropertyCode.get(code);
+    }
+
+    public Set<String> getAllNeighborhoods() {
+        return propertiesByNeighborhood.keySet();
+    }
+
+
+    @Override
+    public List<Event> getAllProperties() {
+        return propertiesByNeighborhood.values()
+                .stream()
+                .flatMap(List::stream)
+                .toList();
     }
 
     @Override
-    public Event getEventByPropertyCode(String code) {
-        return eventsByPropertyCode.get(code);
+    public List<Event> getPropertiesInNeighborhood(String neighborhood) {
+        return propertiesByNeighborhood.getOrDefault(neighborhood, List.of());
     }
 
 }

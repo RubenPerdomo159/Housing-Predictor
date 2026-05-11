@@ -4,6 +4,7 @@ import io.javalin.Javalin;
 import org.ulpgc.dacd.logic.BusinessLogic;
 import org.ulpgc.dacd.model.Datamart;
 import org.ulpgc.dacd.model.Event;
+import org.ulpgc.dacd.model.InMemoryDatamart;
 
 public class ApiController {
 
@@ -35,6 +36,22 @@ public class ApiController {
 
             ctx.json(logic.evaluateProperty(event));
         });
+
+        app.get("/neighborhoods", ctx -> {
+            ctx.json(datamart.getAllNeighborhoods());
+        });
+
+        app.get("/properties", ctx -> {
+            ctx.json(datamart.getAllProperties());
+        });
+
+        app.get("/properties/{neighborhood}", ctx -> {
+            String neighborhood = ctx.pathParam("neighborhood");
+            ctx.json(datamart.getPropertiesInNeighborhood(neighborhood));
+        });
+
+
+
 
 
         System.out.println("API REST iniciada en puerto 7000");
