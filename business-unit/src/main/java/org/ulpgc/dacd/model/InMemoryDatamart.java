@@ -1,0 +1,53 @@
+package org.ulpgc.dacd.model;
+
+import java.util.*;
+
+public class InMemoryDatamart implements Datamart {
+
+    private final Map<String, List<Event>> propertiesByNeighborhood = new HashMap<>();
+    private final Map<String, Event> eventsByPropertyCode = new HashMap<>();
+
+
+    @Override
+    public void registerEvent(Event event) {
+        if (event == null || event.getPayload() == null) return;
+
+        String neighborhood = event.getPayload().getNeighborhood();
+        if (neighborhood == null) neighborhood = "UNKNOWN";
+
+        propertiesByNeighborhood
+                .computeIfAbsent(neighborhood, k -> new ArrayList<>())
+                .add(event);
+
+        // NUEVO: indexar por propertyCode
+        String code = event.getPayload().getPropertyCode();
+        if (code != null) {
+            eventsByPropertyCode.put(code, event);
+        }
+
+        System.out.println("Registrado evento de propiedad: " + code);
+    }
+
+
+    @Override
+    public double getAveragePricePerSquareMeter(String neighborhood) {
+        List<Event> list = propertiesByNeighborhood.getOrDefault(neighborhood, List.of());
+        if (list.isEmpty()) return 0;
+
+        return list.stream()
+                .mapToDouble(e -> e.getPayload().getPrice() / e.getPayload().getSize())
+                .average()
+                .orElse(0);
+    }
+
+    @Override
+    public List<Event> getPropertiesInNeighborhood(String neighborhood) {
+        return propertiesByNeighborhood.getOrDefault(neighborhood, List.of());
+    }
+
+    @Override
+    public Event getEventByPropertyCode(String code) {
+        return eventsByPropertyCode.get(code);
+    }
+
+}
