@@ -6,6 +6,8 @@ import org.ulpgc.dacd.model.Datamart;
 import org.ulpgc.dacd.model.Event;
 import org.ulpgc.dacd.model.InMemoryDatamart;
 
+import java.util.List;
+
 public class ApiController {
 
     private Javalin app;
@@ -49,6 +51,55 @@ public class ApiController {
             String neighborhood = ctx.pathParam("neighborhood");
             ctx.json(datamart.getPropertiesInNeighborhood(neighborhood));
         });
+
+        app.get("/property/{propertyCode}", ctx -> {
+            String code = ctx.pathParam("propertyCode");
+            Event event = datamart.getEventByPropertyCode(code);
+
+            if (event == null) {
+                ctx.status(404).json(java.util.Map.of("error", "No existe esa propiedad"));
+                return;
+            }
+
+            ctx.json(event.getPayload()); // aquí va toda la ficha rica
+        });
+
+        app.get("/property/{propertyCode}/full", ctx -> {
+            String code = ctx.pathParam("propertyCode");
+            Event event = datamart.getEventByPropertyCode(code);
+
+            if (event == null) {
+                ctx.status(404).json(java.util.Map.of("error", "No existe esa propiedad"));
+                return;
+            }
+
+            var valuation = logic.evaluateProperty(event);
+            var explanation = logic.explainValuation(event, valuation);
+
+            ctx.json(java.util.Map.of(
+                    "details", event.getPayload(),
+                    "valuation", valuation,
+                    "explanation", explanation
+            ));
+        });
+
+        app.get("/property/{propertyCode}/comparables", ctx -> {
+            String code = ctx.pathParam("propertyCode");
+            Event event = datamart.getEventByPropertyCode(code);
+
+            if (event == null) {
+                ctx.status(404).json(java.util.Map.of("error", "No existe esa propiedad"));
+                return;
+            }
+
+            List<Event> comps = logic.getComparables(event);
+
+            ctx.json(comps.stream()
+                    .map(Event::getPayload)
+                    .toList());
+        });
+
+
 
 
 
