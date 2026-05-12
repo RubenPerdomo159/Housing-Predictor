@@ -32,5 +32,9 @@ public class Event {
     public void setPayload(Payload payload) {
         this.payload = payload;
     }
+
+    public String getSource() {
+        return ss;
+    }
 }
 
