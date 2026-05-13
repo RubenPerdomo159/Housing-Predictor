@@ -1,4 +1,4 @@
-package org.ulpgc.dacd;
+package org.ulpgc.dacd.view;
 
 import com.sun.net.httpserver.HttpServer;
 import java.io.File;

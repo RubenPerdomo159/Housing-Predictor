@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.ulpgc.dacd.model.Datamart;
+import org.ulpgc.dacd.controller.Datamart;
 import org.ulpgc.dacd.model.Event;
 import org.ulpgc.dacd.model.FotocasaProperty;
 import org.ulpgc.dacd.model.Payload;

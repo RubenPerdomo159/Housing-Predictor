@@ -1,4 +1,6 @@
-package org.ulpgc.dacd.model;
+package org.ulpgc.dacd.controller;
+
+import org.ulpgc.dacd.model.Event;
 
 import java.util.*;
 

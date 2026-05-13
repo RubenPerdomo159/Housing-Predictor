@@ -1,10 +1,11 @@
 package org.ulpgc.dacd;
 
-import org.ulpgc.dacd.controller.ApiController;
+import org.ulpgc.dacd.view.ApiController;
 import org.ulpgc.dacd.messaging.EventConsumer;
-import org.ulpgc.dacd.model.Datamart;
-import org.ulpgc.dacd.model.HistoricalEventLoader;
-import org.ulpgc.dacd.model.InMemoryDatamart;
+import org.ulpgc.dacd.controller.Datamart;
+import org.ulpgc.dacd.controller.HistoricalEventLoader;
+import org.ulpgc.dacd.controller.InMemoryDatamart;
+import org.ulpgc.dacd.view.WebServer;
 
 public class BusinessUnitApp {
 

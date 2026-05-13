@@ -1,4 +1,4 @@
-package org.ulpgc.dacd.model;
+package org.ulpgc.dacd.controller;
 
 import com.google.gson.Gson;
 import org.ulpgc.dacd.model.Event;

@@ -1,6 +1,6 @@
 package org.ulpgc.dacd.logic;
 
-import org.ulpgc.dacd.model.Datamart;
+import org.ulpgc.dacd.controller.Datamart;
 import org.ulpgc.dacd.model.Event;
 import org.ulpgc.dacd.model.Payload;
 

@@ -1,10 +1,9 @@
-package org.ulpgc.dacd.controller;
+package org.ulpgc.dacd.view;
 
 import io.javalin.Javalin;
+import org.ulpgc.dacd.controller.Datamart;
 import org.ulpgc.dacd.logic.BusinessLogic;
-import org.ulpgc.dacd.model.Datamart;
 import org.ulpgc.dacd.model.Event;
-import org.ulpgc.dacd.model.InMemoryDatamart;
 
 import java.util.List;
 
