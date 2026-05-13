@@ -22,17 +22,22 @@ public class HistoricalEventLoader {
         for (File sourceFolder : root.listFiles()) { // Idealista, Fotocasa
             if (!sourceFolder.isDirectory()) continue;
 
-            for (File dateFolder : sourceFolder.listFiles()) { // 20260509
-                if (!dateFolder.isDirectory()) continue;
+            for (File subFolder : sourceFolder.listFiles()) { // IdealistaFeeder, FotocasaScraper
+                if (!subFolder.isDirectory()) continue;
 
-                for (File file : dateFolder.listFiles()) { // 20260509.events
-                    if (file.getName().endsWith(".events")) {
-                        loadFile(file, datamart);
+                for (File dateFolder : subFolder.listFiles()) { // 20260509
+                    if (!dateFolder.isDirectory()) continue;
+
+                    for (File file : dateFolder.listFiles()) { // 20260509.events
+                        if (file.getName().endsWith(".events")) {
+                            loadFile(file, datamart);
+                        }
                     }
                 }
             }
         }
     }
+
 
     private void loadFile(File file, Datamart datamart) {
         System.out.println("Cargando histórico: " + file.getAbsolutePath());

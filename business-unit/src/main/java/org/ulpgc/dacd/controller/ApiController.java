@@ -16,7 +16,15 @@ public class ApiController {
 
         BusinessLogic logic = new BusinessLogic(datamart);
 
-        app = Javalin.create().start(7000);
+        app = Javalin.create(config -> {
+            config.bundledPlugins.enableCors(cors -> {
+                cors.addRule(rule -> {
+                    rule.allowHost("http://localhost:8080");
+                });
+            });
+        }).start(7000);
+
+
 
         app.get("/ping", ctx -> ctx.result("API funcionando"));
 
