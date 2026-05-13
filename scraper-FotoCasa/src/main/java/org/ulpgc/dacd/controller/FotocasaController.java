@@ -1,7 +1,6 @@
 package org.ulpgc.dacd.controller;
 
 import org.ulpgc.dacd.controller.feeder.FotocasaScraperService;
-import org.ulpgc.dacd.controller.persistence.FotocasaPropertyStore;
 import org.ulpgc.dacd.model.FotocasaProperty;
 
 import java.time.LocalDateTime;
@@ -11,28 +10,27 @@ import java.util.List;
 public class FotocasaController {
 
     private final FotocasaScraperService scraper;
-    private final FotocasaPropertyStore store;
 
-    public FotocasaController(FotocasaScraperService scraper, FotocasaPropertyStore store) {
+    public FotocasaController(FotocasaScraperService scraper) {
         this.scraper = scraper;
-        this.store = store;
     }
 
     public void execute() throws Exception {
-        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 
-        int lastPage = store.getLastPage();
-        int nextPage = lastPage + 1;
+        String timestamp = LocalDateTime.now()
+                .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 
-        List<FotocasaProperty> props = scraper.getProperties(nextPage);
+        int page = 1;
+
+        List<FotocasaProperty> props = scraper.getProperties(page);
 
         for (FotocasaProperty p : props) {
             p.capturedAt = timestamp;
         }
 
-        store.store(props);
-        store.saveLastPage(nextPage);
-
-        System.out.println("Página " + nextPage + " guardada a las " + timestamp);
+        System.out.println(
+                "Se obtuvieron " + props.size() +
+                        " propiedades a las " + timestamp
+        );
     }
 }
