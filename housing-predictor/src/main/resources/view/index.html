@@ -3,26 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <title>Housing Predictor</title>
-    <link rel="stylesheet" href="style.css">
+
+    <style>
+        /* Layout general */
+        #layout {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            align-items: flex-start;
+        }
+
+        /* Columna izquierda (tabla) */
+        #left {
+            width: 60%;
+        }
+
+        /* Columna derecha (ficha detallada) */
+        #right {
+            width: 40%;
+            position: sticky;
+            top: 20px;
+        }
+
+        /* Estilo de la ficha */
+        #details {
+            padding: 20px;
+            border: 2px solid #ccc;
+            background: #fafafa;
+            font-size: 16px;
+            min-height: 200px;
+        }
+
+        /* Hover en la tabla */
+        #properties-table tr:hover,
+        #comparables-table tr:hover {
+            background: #eef;
+        }
+
+        #comparables-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        #comparables-table th, #comparables-table td {
+            border: 1px solid #ccc;
+            padding: 6px;
+        }
+    </style>
 </head>
 <body>
 
 <h1>Housing Predictor</h1>
 
-<button onclick="loadProperties()">Cargar propiedades</button>
+<div class="filters">
+    <input id="minPrice" type="number" placeholder="Precio mínimo">
+    <input id="maxPrice" type="number" placeholder="Precio máximo">
 
-<table id="properties-table">
-    <thead>
-    <tr>
-        <th>Precio</th>
-        <th>Metros</th>
-        <th>Habitaciones</th>
-        <th>Localización</th>
-    </tr>
-    </thead>
-    <tbody></tbody>
-</table>
+    <input id="minSize" type="number" placeholder="Metros mínimos">
+    <input id="maxSize" type="number" placeholder="Metros máximos">
+
+    <input id="rooms" type="number" placeholder="Habitaciones">
+
+    <select id="type">
+        <option value="">Cualquier Tipo</option>
+        <option value="flat">Piso</option>
+        <option value="house">Casa</option>
+        <option value="duplex">Dúplex</option>
+        <option value="studio">Estudio</option>
+    </select>
+
+    <input id="zone" type="text" placeholder="Zona (barrio/distrito/municipio)">
+
+    <select id="valuationStatus">
+        <option value="">Cualquier valoración</option>
+        <option value="infravalorada">Infravalorada</option>
+        <option value="precio justo">Precio justo</option>
+        <option value="sobrevalorada">Sobrevalorada</option>
+    </select>
+
+    <button onclick="loadProperties()">Buscar</button>
+</div>
+
+<div id="layout">
+
+    <div id="left">
+        <table id="properties-table" border="1">
+            <thead>
+            <tr>
+                <th>Precio</th>
+                <th>Metros</th>
+                <th>Habitaciones</th>
+                <th>Dirección</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div id="right">
+        <div id="details"></div>
+    </div>
+
+</div>
 
 <script src="app.js"></script>
+
 </body>
 </html>
