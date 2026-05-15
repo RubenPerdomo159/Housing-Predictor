@@ -41,77 +41,122 @@ public class EventConsumer {
             consumer.setMessageListener(message -> {
                 try {
                     if (message instanceof TextMessage textMessage) {
-
                         String json = textMessage.getText();
-
                         JsonObject root = JsonParser.parseString(json).getAsJsonObject();
-                        String ss = root.get("ss").getAsString();
+                        String ss = root.has("ss") ? root.get("ss").getAsString() : "";
 
                         Event event;
 
-                        // Caso Fotocasa
-                        if ("fotocasa".equalsIgnoreCase(ss)) {
-
-                            JsonObject payloadNode = root.getAsJsonObject("payload");
-                            FotocasaProperty f = gson.fromJson(payloadNode, FotocasaProperty.class);
-
-                            Payload p = new Payload();
-
-                            String code = Integer.toHexString(f.url.hashCode());
-                            p.setPropertyCode("FC-" + code);
-
-                            p.setPrice(f.precio);
-                            p.setSize(f.metros);
-                            p.setRooms(f.habitaciones);
-                            p.setAddress(f.ubicacion);
-                            p.setUrl(f.url);
-                            p.setCapturedAt(f.capturedAt);
-
-                            p.setNeighborhood("Desconocido");
-                            p.setDistrict("Desconocido");
-                            p.setMunicipality("Las Palmas de Gran Canaria");
-                            p.setProvince("Las Palmas");
-
-                            p.setBathrooms(0);
-                            p.setFloor("0");
-                            p.setExterior(true);
-                            p.setPropertyType("flat");
-                            p.setStatus("unknown");
-
-                            p.setHasLift(false);
-                            p.setHasSwimmingPool(false);
-                            p.setHasTerrace(false);
-                            p.setHasAirConditioning(false);
-                            p.setHasGarden(false);
-                            p.setHasBoxRoom(false);
-                            p.setHasParkingSpace(false);
-                            p.setNewDevelopment(false);
-
-                            event = new Event();
-                            event.setTs(root.get("ts").getAsString());
-                            event.setSs("fotocasa");
-                            event.setPayload(p);
-
+                        if (ss.toLowerCase().contains("fotocasa")) {
+                            event = fotocasaToEvent(root);
                         } else {
-                            // Idealista
                             event = gson.fromJson(json, Event.class);
                         }
 
-                        datamart.registerEvent(event);
-
-                        System.out.println("Evento recibido y registrado: " +
-                                event.getPayload().getPropertyCode());
+                        if (event != null && event.getPayload() != null
+                                && event.getPayload().getPropertyCode() != null) {
+                            datamart.registerEvent(event);
+                            System.out.println("Evento registrado [" + ss + "]: "
+                                    + event.getPayload().getPropertyCode());
+                        } else {
+                            System.err.println("Evento descartado por falta de propertyCode. ss=" + ss);
+                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             });
 
-
             System.out.println("EventConsumer escuchando en topic: " + topicName);
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public static Event fotocasaToEvent(JsonObject root) {
+        try {
+            Gson gson = new Gson();
+
+            if (!root.has("payload") || root.get("payload").isJsonNull()) {
+                System.err.println("[Fotocasa] Evento sin campo 'payload', descartado. JSON: " + root);
+                return null;
+            }
+
+            JsonObject payloadNode = root.getAsJsonObject("payload");
+            FotocasaProperty f = gson.fromJson(payloadNode, FotocasaProperty.class);
+
+            if (f == null) {
+                System.err.println("[Fotocasa] No se pudo deserializar el payload: " + payloadNode);
+                return null;
+            }
+
+            System.out.println("[Fotocasa] Parseando propiedad: propertyCode=" + f.propertyCode
+                    + " | url=" + f.url + " | precio=" + f.precio + " | metros=" + f.metros);
+
+            Payload p = new Payload();
+
+            // 1. propertyCode explícito en el JSON (scraper nuevo)
+            if (f.propertyCode != null && !f.propertyCode.isEmpty()) {
+                p.setPropertyCode(f.propertyCode);
+
+                // 2. fallback: generar desde la URL (eventos históricos sin propertyCode)
+            } else if (f.url != null && !f.url.isEmpty()) {
+                p.setPropertyCode("FC-" + Integer.toHexString(Math.abs(f.url.hashCode())));
+
+                // 3. último recurso: hash de precio + metros + capturedAt para no descartar el evento
+            } else {
+                String fallbackSeed = f.precio + "_" + f.metros + "_" + f.capturedAt;
+                p.setPropertyCode("FC-" + Integer.toHexString(Math.abs(fallbackSeed.hashCode())));
+                System.err.println("[Fotocasa] Advertencia: sin URL ni propertyCode, usando hash de campos: " + p.getPropertyCode());
+            }
+
+            p.setPrice(f.precio);
+            p.setSize(f.metros);
+            p.setRooms(f.habitaciones);
+            p.setAddress(f.ubicacion != null ? f.ubicacion : "");
+            p.setUrl(f.url != null ? f.url : "");
+            p.setCapturedAt(f.capturedAt != null ? f.capturedAt : java.time.Instant.now().toString());
+
+            if (f.metros > 0) {
+                p.setPriceM2(f.precio / f.metros);
+            }
+
+            p.setNeighborhood("Las Palmas - General");
+            p.setDistrict("Las Palmas");
+            p.setMunicipality("Las Palmas de Gran Canaria");
+            p.setProvince("Las Palmas");
+
+            p.setBathrooms(f.bathrooms);
+            p.setFloor(f.floor != null ? f.floor : "");
+            p.setExterior(f.exterior);
+            p.setPropertyType(f.propertyType != null ? f.propertyType : "piso");
+            p.setStatus("active");
+
+            p.setHasLift(f.hasLift);
+            p.setHasSwimmingPool(f.hasSwimmingPool);
+            p.setHasTerrace(f.hasTerrace);
+            p.setHasAirConditioning(f.hasAirConditioning);
+            p.setHasGarden(f.hasGarden);
+            p.setHasBoxRoom(f.hasBoxRoom);
+            p.setHasParkingSpace(f.hasParkingSpace);
+            p.setNewDevelopment(f.newDevelopment);
+
+            Event event = new Event();
+            event.setTs(root.has("ts") && !root.get("ts").isJsonNull()
+                    ? root.get("ts").getAsString()
+                    : java.time.Instant.now().toString());
+            event.setSs("FotocasaScraper");
+            event.setPayload(p);
+
+            System.out.println("[Fotocasa] Evento listo: propertyCode=" + p.getPropertyCode()
+                    + " | precio=" + p.getPrice() + "€ | metros=" + p.getSize() + "m²");
+            return event;
+
+        } catch (Exception e) {
+            System.err.println("[Fotocasa] Error convirtiendo evento: " + e.getMessage());
+            e.printStackTrace();
+            return null;
         }
     }
 }

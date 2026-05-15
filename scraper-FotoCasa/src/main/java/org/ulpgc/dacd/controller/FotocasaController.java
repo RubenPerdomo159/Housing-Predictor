@@ -3,8 +3,6 @@ package org.ulpgc.dacd.controller;
 import org.ulpgc.dacd.controller.feeder.FotocasaScraperService;
 import org.ulpgc.dacd.model.FotocasaProperty;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class FotocasaController {
@@ -17,16 +15,11 @@ public class FotocasaController {
 
     public void execute() throws Exception {
 
-        String timestamp = LocalDateTime.now()
-                .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        String timestamp = java.time.Instant.now().toString();
 
         int page = 1;
 
         List<FotocasaProperty> props = scraper.getProperties(page);
-
-        for (FotocasaProperty p : props) {
-            p.capturedAt = timestamp;
-        }
 
         System.out.println(
                 "Se obtuvieron " + props.size() +

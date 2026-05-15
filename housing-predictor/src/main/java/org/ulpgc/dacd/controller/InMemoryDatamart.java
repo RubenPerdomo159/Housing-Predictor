@@ -14,20 +14,24 @@ public class InMemoryDatamart implements Datamart {
     public void registerEvent(Event event) {
         if (event == null || event.getPayload() == null) return;
 
+        String code = event.getPayload().getPropertyCode();
+        if (code == null || code.isEmpty()) {
+            System.err.println("[Datamart] Evento descartado: propertyCode nulo. ss=" + event.getSs());
+            return;
+        }
+
         String neighborhood = event.getPayload().getNeighborhood();
-        if (neighborhood == null) neighborhood = "UNKNOWN";
+        if (neighborhood == null || neighborhood.isEmpty()) neighborhood = "UNKNOWN";
 
         propertiesByNeighborhood
                 .computeIfAbsent(neighborhood, k -> new ArrayList<>())
                 .add(event);
 
-        // NUEVO: indexar por propertyCode
-        String code = event.getPayload().getPropertyCode();
-        if (code != null) {
-            eventsByPropertyCode.put(code, event);
-        }
+        eventsByPropertyCode.put(code, event);
 
-        System.out.println("Registrado evento de propiedad: " + code);
+        System.out.println("[Datamart] Registrado: " + code
+                + " | barrio=" + neighborhood
+                + " | precio=" + event.getPayload().getPrice() + "€");
     }
 
 

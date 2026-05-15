@@ -1,6 +1,7 @@
 package org.ulpgc.dacd.model;
 
 public class FotocasaProperty {
+    public String propertyCode;
     public double precio;
     public double metros;
     public int habitaciones;
