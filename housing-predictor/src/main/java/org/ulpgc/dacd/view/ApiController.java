@@ -1,6 +1,7 @@
 package org.ulpgc.dacd.view;
 
 import io.javalin.Javalin;
+import io.javalin.http.staticfiles.Location;
 import org.ulpgc.dacd.controller.Datamart;
 import org.ulpgc.dacd.logic.BusinessLogic;
 import org.ulpgc.dacd.model.Event;
@@ -16,26 +17,28 @@ public class ApiController {
         BusinessLogic logic = new BusinessLogic(datamart);
 
         app = Javalin.create(config -> {
-            config.bundledPlugins.enableCors(cors -> {
-                cors.addRule(rule -> {
-                    rule.allowHost("http://localhost:8080");
-                });
+
+            config.staticFiles.add(staticFiles -> {
+                staticFiles.hostedPath = "/";
+                staticFiles.directory = "view";
+                staticFiles.location = Location.CLASSPATH;
             });
+
         }).start(7000);
 
+        app.get("/", ctx -> ctx.redirect("/index.html"));
 
+        // --- API REST ---
+        app.get("/api/ping", ctx -> ctx.result("API funcionando"));
 
-        app.get("/ping", ctx -> ctx.result("API funcionando"));
-
-        app.get("/stats/{neighborhood}", ctx -> {
+        app.get("/api/stats/{neighborhood}", ctx -> {
             String neighborhood = ctx.pathParam("neighborhood");
             double avg = datamart.getAveragePricePerSquareMeter(neighborhood);
             ctx.json(avg);
         });
 
-        app.get("/valuation/{propertyCode}", ctx -> {
+        app.get("/api/valuation/{propertyCode}", ctx -> {
             String code = ctx.pathParam("propertyCode");
-
             Event event = datamart.getEventByPropertyCode(code);
 
             if (event == null) {
@@ -46,20 +49,16 @@ public class ApiController {
             ctx.json(logic.evaluateProperty(event));
         });
 
-        app.get("/neighborhoods", ctx -> {
-            ctx.json(datamart.getAllNeighborhoods());
-        });
+        app.get("/api/neighborhoods", ctx -> ctx.json(datamart.getAllNeighborhoods()));
 
-        app.get("/properties", ctx -> {
-            ctx.json(datamart.getAllProperties());
-        });
+        app.get("/api/properties", ctx -> ctx.json(datamart.getAllProperties()));
 
-        app.get("/properties/{neighborhood}", ctx -> {
+        app.get("/api/properties/{neighborhood}", ctx -> {
             String neighborhood = ctx.pathParam("neighborhood");
             ctx.json(datamart.getPropertiesInNeighborhood(neighborhood));
         });
 
-        app.get("/property/{propertyCode}", ctx -> {
+        app.get("/api/property/{propertyCode}", ctx -> {
             String code = ctx.pathParam("propertyCode");
             Event event = datamart.getEventByPropertyCode(code);
 
@@ -68,10 +67,10 @@ public class ApiController {
                 return;
             }
 
-            ctx.json(event.getPayload()); // aquí va toda la ficha rica
+            ctx.json(event.getPayload());
         });
 
-        app.get("/property/{propertyCode}/full", ctx -> {
+        app.get("/api/property/{propertyCode}/full", ctx -> {
             String code = ctx.pathParam("propertyCode");
             Event event = datamart.getEventByPropertyCode(code);
 
@@ -90,7 +89,7 @@ public class ApiController {
             ));
         });
 
-        app.get("/property/{propertyCode}/comparables", ctx -> {
+        app.get("/api/property/{propertyCode}/comparables", ctx -> {
             String code = ctx.pathParam("propertyCode");
             Event event = datamart.getEventByPropertyCode(code);
 
@@ -106,12 +105,6 @@ public class ApiController {
                     .toList());
         });
 
-
-
-
-
-
-
-        System.out.println("API REST iniciada en puerto 7000");
+        System.out.println("Servidor web + API iniciado en http://localhost:7000");
     }
 }

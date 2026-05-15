@@ -5,7 +5,7 @@ import org.ulpgc.dacd.messaging.EventConsumer;
 import org.ulpgc.dacd.controller.Datamart;
 import org.ulpgc.dacd.controller.HistoricalEventLoader;
 import org.ulpgc.dacd.controller.InMemoryDatamart;
-import org.ulpgc.dacd.view.WebServer;
+
 
 public class BusinessUnitApp {
 
@@ -35,6 +35,5 @@ public class BusinessUnitApp {
         ApiController api = new ApiController();
         api.start(datamart);
 
-        WebServer.start();
     }
 }
