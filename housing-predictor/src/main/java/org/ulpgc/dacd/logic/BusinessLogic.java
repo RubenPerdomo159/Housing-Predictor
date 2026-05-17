@@ -41,15 +41,12 @@ public class BusinessLogic {
         );
     }
 
-
-
     public double calculateAdjustedExpectedPrice(Event event) {
         Payload p = event.getPayload();
 
         double base = datamart.getAveragePricePerSquareMeter(p.getNeighborhood()) * p.getSize();
         double factor = 1.0;
 
-        // Extras positivos
         if (p.isHasLift()) factor += 0.03;
         if (p.isHasTerrace()) factor += 0.05;
         if (p.isHasSwimmingPool()) factor += 0.07;
@@ -57,17 +54,14 @@ public class BusinessLogic {
         if (p.isExterior()) factor += 0.02;
         if (p.isNewDevelopment()) factor += 0.10;
 
-        // Penalizaciones
         if (!p.isHasLift() && p.getFloor() != null && Integer.parseInt(p.getFloor()) > 3)
             factor -= 0.08;
 
         if (!p.isExterior()) factor -= 0.04;
 
-        // Tamaño
         if (p.getSize() < 40) factor += 0.08;
         if (p.getSize() > 120) factor -= 0.05;
 
-        // Bajadas de precio
         if (p.getPriceDropPercent() > 10) factor += 0.05;
         else if (p.getPriceDropPercent() > 5) factor += 0.02;
         else if (p.getPriceDropPercent() > 0) factor += 0.01;
@@ -86,7 +80,6 @@ public class BusinessLogic {
         sb.append("Se han encontrado ").append(comps.size())
                 .append(" viviendas comparables en el barrio. ");
 
-        // Estado general
         if (diff < -0.07 * expected) {
             sb.append("La vivienda está infravalorada porque ");
         } else if (diff > 0.07 * expected) {
@@ -95,7 +88,6 @@ public class BusinessLogic {
             sb.append("La vivienda tiene un precio justo porque ");
         }
 
-        // Razones basadas en características
         if (!p.isHasLift() && p.getFloor() != null && Integer.parseInt(p.getFloor()) > 3)
             sb.append("no tiene ascensor y está en una planta alta, ");
 
@@ -114,7 +106,6 @@ public class BusinessLogic {
         if (p.getPriceDropPercent() > 0)
             sb.append("ha tenido bajadas de precio recientes, ");
 
-        // Precio por m²
         double avg = datamart.getAveragePricePerSquareMeter(p.getNeighborhood());
         double priceM2 = p.getPrice() / p.getSize();
 
@@ -123,7 +114,6 @@ public class BusinessLogic {
         else
             sb.append("el precio por m² está por debajo de la media del barrio, ");
 
-        // Limpieza final
         String explanation = sb.toString().trim();
         if (explanation.endsWith(",")) {
             explanation = explanation.substring(0, explanation.length() - 1) + ".";
@@ -154,7 +144,6 @@ public class BusinessLogic {
         List<Event> comps = getComparables(event);
 
         if (comps.isEmpty()) {
-            // fallback: usar media del barrio
             return calculateAdjustedExpectedPrice(event);
         }
 
@@ -166,8 +155,4 @@ public class BusinessLogic {
         double avgM2 = sum / comps.size();
         return avgM2 * event.getPayload().getSize();
     }
-
-
-
-
 }

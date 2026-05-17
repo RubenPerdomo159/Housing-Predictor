@@ -41,20 +41,17 @@ public class FotocasaScraperService {
             Page pageObj = context.newPage();
             pageObj.navigate(url);
 
-            // Esperar carga inicial
             try {
                 pageObj.waitForLoadState(LoadState.DOMCONTENTLOADED);
                 pageObj.waitForTimeout(2000);
             } catch (Exception ignored) {}
 
-            // Aceptar cookies si aparece el banner
             try {
                 pageObj.locator("button:has-text('Aceptar'), button:has-text('Acepto'), [id*='accept'], [class*='accept']")
                         .first().click(new Locator.ClickOptions().setTimeout(5000));
                 pageObj.waitForTimeout(1000);
             } catch (Exception ignored) {}
 
-            // Esperar a que aparezcan las tarjetas con múltiples selectores posibles
             boolean cardsFound = false;
             String[] waitSelectors = {
                     "article[class*='re-CardPack']",
@@ -80,13 +77,11 @@ public class FotocasaScraperService {
                 return results;
             }
 
-            // Scroll para cargar contenido lazy
             for (int i = 0; i < 5; i++) {
                 pageObj.mouse().wheel(0, 2500);
                 pageObj.waitForTimeout(800);
             }
 
-            // Intentar obtener tarjetas con selectores en orden de especificidad
             List<ElementHandle> items = new ArrayList<>();
             String[] cardSelectors = {
                     "article[class*='re-CardPack']",
@@ -113,18 +108,14 @@ public class FotocasaScraperService {
             for (ElementHandle item : items) {
                 FotocasaProperty p = new FotocasaProperty();
 
-                // --- Precio ---
                 p.precio = extractPrice(item);
                 if (p.precio == 0) continue;
 
-                // --- URL ---
                 p.url = extractUrl(item);
                 if (p.url == null || p.url.isEmpty()) continue;
 
-                // --- propertyCode a partir de la URL ---
-                p.propertyCode = "FC-" + Integer.toHexString(p.url.hashCode());
+                p.propertyCode = extractPropertyCode(p.url);
 
-                // --- Texto completo para extracción por regex ---
                 String rawText;
                 try {
                     rawText = item.innerText();
@@ -133,28 +124,23 @@ public class FotocasaScraperService {
                 }
                 String text = rawText.toLowerCase();
 
-                // --- Metros ---
                 Matcher mM2 = Pattern.compile("(\\d+(?:[.,]\\d+)?)\\s*m[²2]").matcher(text);
                 if (mM2.find()) {
                     p.metros = Double.parseDouble(mM2.group(1).replace(",", "."));
                 }
 
-                // --- Habitaciones ---
                 Matcher mHab = Pattern.compile("(\\d+)\\s*hab").matcher(text);
                 if (mHab.find()) {
                     p.habitaciones = Integer.parseInt(mHab.group(1));
                 }
 
-                // --- Baños ---
                 Matcher mBath = Pattern.compile("(\\d+)\\s*ba[ñn]").matcher(text);
                 if (mBath.find()) {
                     p.bathrooms = Integer.parseInt(mBath.group(1));
                 }
 
-                // --- Dirección / Ubicación ---
                 p.ubicacion = extractAddress(item, rawText);
 
-                // --- Planta ---
                 Matcher mFloor = Pattern.compile(
                         "(bajo|ático|atico|\\d+\\.?ª?\\s*planta|entresuelo|principal|semisótano|semisotano)",
                         Pattern.CASE_INSENSITIVE
@@ -163,7 +149,6 @@ public class FotocasaScraperService {
                     p.floor = mFloor.group(1).trim();
                 }
 
-                // --- Tipo de propiedad ---
                 if (text.contains("ático") || text.contains("atico")) p.propertyType = "ático";
                 else if (text.contains("chalet")) p.propertyType = "chalet";
                 else if (text.contains("dúplex") || text.contains("duplex")) p.propertyType = "dúplex";
@@ -172,7 +157,6 @@ public class FotocasaScraperService {
                 else if (text.contains("piso")) p.propertyType = "piso";
                 else p.propertyType = "piso";
 
-                // --- Características booleanas ---
                 p.exterior = text.contains("exterior");
                 p.hasLift = text.contains("ascensor");
                 p.hasSwimmingPool = text.contains("piscina");
@@ -200,7 +184,6 @@ public class FotocasaScraperService {
     }
 
     private double extractPrice(ElementHandle item) {
-        // Intentar múltiples selectores para el precio
         String[] priceSelectors = {
                 "[class*='re-CardPrice'] span",
                 "[class*='CardPrice']",
@@ -221,7 +204,6 @@ public class FotocasaScraperService {
             } catch (Exception ignored) {}
         }
 
-        // Fallback: buscar en el texto completo
         try {
             String fullText = item.innerText();
             Matcher m = Pattern.compile("([\\d.]+(?:[.,]\\d+)?)\\s*€").matcher(fullText.replace(".", "").replace(",", ""));
@@ -235,11 +217,9 @@ public class FotocasaScraperService {
 
     private double parsePrice(String text) {
         try {
-            // Eliminar todo excepto dígitos
             String clean = text.replaceAll("[^\\d]", "");
             if (clean.isEmpty()) return 0;
             double val = Double.parseDouble(clean);
-            // Sanity check: precios de viviendas en España entre 10.000 y 10.000.000
             if (val < 10000 || val > 10000000) return 0;
             return val;
         } catch (Exception e) {
@@ -248,18 +228,25 @@ public class FotocasaScraperService {
     }
 
     private String extractUrl(ElementHandle item) {
-        // Buscar el primer enlace que parezca un listing de propiedad
         try {
+            String dataHref = item.getAttribute("data-href");
+            if (dataHref != null && !dataHref.isEmpty()) {
+                return dataHref.startsWith("http") ? dataHref : "https://www.fotocasa.es" + dataHref;
+            }
+
+            String dataItemUrl = item.getAttribute("data-item-url");
+            if (dataItemUrl != null && !dataItemUrl.isEmpty()) {
+                return dataItemUrl.startsWith("http") ? dataItemUrl : "https://www.fotocasa.es" + dataItemUrl;
+            }
+
             List<ElementHandle> links = item.querySelectorAll("a[href]");
             for (ElementHandle link : links) {
                 String href = link.getAttribute("href");
-                if (href != null && !href.isEmpty()) {
-                    if (href.contains("/vivienda/") || href.contains("/comprar/") || href.startsWith("/es/")) {
-                        return href.startsWith("http") ? href : "https://www.fotocasa.es" + href;
-                    }
+                if (href != null && href.contains("/vivienda/")) {
+                    return href.startsWith("http") ? href : "https://www.fotocasa.es" + href;
                 }
             }
-            // Si no encontramos uno específico, usar el primero
+
             ElementHandle firstLink = item.querySelector("a[href]");
             if (firstLink != null) {
                 String href = firstLink.getAttribute("href");
@@ -271,15 +258,21 @@ public class FotocasaScraperService {
         return "";
     }
 
+    private String extractPropertyCode(String url) {
+        try {
+            Matcher m = Pattern.compile("/(\\d{6,12})/").matcher(url);
+            if (m.find()) {
+                return "FC-" + m.group(1);
+            }
+        } catch (Exception ignored) {}
+        return "FC-" + Integer.toHexString(url.hashCode());
+    }
+
     private String extractAddress(ElementHandle item, String rawText) {
-        // Intentar selectores específicos de Fotocasa para la dirección
         String[] addressSelectors = {
-                "[class*='re-CardTitle']",
-                "[class*='CardTitle']",
-                "[class*='CardSubTitle']",
+                "[class*='re-CardAddress']",
                 "[class*='re-CardSubTitle']",
-                "[class*='address']",
-                "h3", "h2"
+                "[class*='re-CardTitle']"
         };
 
         for (String sel : addressSelectors) {
@@ -287,26 +280,49 @@ public class FotocasaScraperService {
                 ElementHandle el = item.querySelector(sel);
                 if (el != null) {
                     String txt = el.innerText().trim();
-                    if (!txt.isEmpty() && txt.length() > 3) {
+                    if (isValidAddress(txt)) {
                         return txt;
+                    } else {
+                        System.out.println("Descartada como address: '" + txt + "'");
                     }
                 }
             } catch (Exception ignored) {}
         }
 
-        // Fallback: buscar en líneas del texto
-        for (String line : rawText.split("\n")) {
-            String trimmed = line.trim();
-            if (trimmed.isEmpty() || trimmed.length() < 4) continue;
-            String lower = trimmed.toLowerCase();
-            if (lower.contains("calle") || lower.contains("avenida") || lower.contains("paseo") ||
-                    lower.contains("carretera") || lower.contains("urb.") || lower.contains("en ")) {
-                if (!lower.contains("€") && !lower.matches(".*\\d+\\s*m[²2].*") && !lower.contains("hab")) {
-                    return trimmed;
-                }
-            }
-        }
         return "";
+    }
+
+    private boolean isValidAddress(String txt) {
+        String lower = txt.toLowerCase();
+
+        if (lower.matches("\\d+/\\d+")) return false;
+        if (lower.contains("nuevo")) return false;
+        if (lower.contains("nuda propiedad")) return false;
+        if (lower.contains("líder de zona")) return false;
+        if (lower.contains("lider de zona")) return false;
+        if (lower.contains("alquilado")) return false;
+        if (lower.contains("vídeo")) return false;
+        if (lower.contains("video")) return false;
+        if (lower.contains("foto")) return false;
+        if (lower.contains("imagen")) return false;
+        if (lower.contains("promoción")) return false;
+        if (lower.contains("promocion")) return false;
+        if (lower.contains("atlantico promociones")) return false;
+        if (lower.contains("atlántico promociones")) return false;
+
+        boolean pareceUbicacion =
+                lower.contains("calle") ||
+                        lower.contains("avenida") ||
+                        lower.contains("paseo") ||
+                        lower.contains("carretera") ||
+                        lower.contains("urb.") ||
+                        lower.contains("urbanización") ||
+                        lower.contains("urbanizacion") ||
+                        lower.contains("barrio") ||
+                        lower.contains("zona") ||
+                        lower.contains("las palmas");
+
+        return pareceUbicacion && lower.length() > 5;
     }
 
     private void publishProperty(FotocasaProperty p) {

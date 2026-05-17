@@ -33,9 +33,6 @@ public class Payload {
     public String url;
     public String capturedAt;
 
-    // Getters y setters
-
-
     public String getPropertyCode() {
         return propertyCode;
     }

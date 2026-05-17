@@ -6,9 +6,6 @@ public class Event {
     private String ss;
     private Payload payload;
 
-    // getters, setters
-
-
     public String getSs() {
         return ss;
     }

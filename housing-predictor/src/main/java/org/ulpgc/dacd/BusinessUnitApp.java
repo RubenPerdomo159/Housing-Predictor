@@ -6,7 +6,6 @@ import org.ulpgc.dacd.controller.Datamart;
 import org.ulpgc.dacd.controller.HistoricalEventLoader;
 import org.ulpgc.dacd.controller.InMemoryDatamart;
 
-
 public class BusinessUnitApp {
 
     public static void main(String[] args) {
@@ -15,17 +14,14 @@ public class BusinessUnitApp {
 
         Datamart datamart = new InMemoryDatamart();
 
-        // 1. Cargar históricos
         HistoricalEventLoader loader = new HistoricalEventLoader();
         loader.loadHistoricalEvents("data", datamart);
 
-        // 2. Consumidores en tiempo real
         EventConsumer idealistaConsumer =
                 new EventConsumer(brokerUrl, "Idealista", datamart, "business-unit-idealista");
 
         EventConsumer fotocasaConsumer =
                 new EventConsumer(brokerUrl, "Fotocasa", datamart, "business-unit-fotocasa");
-
 
         idealistaConsumer.start();
         fotocasaConsumer.start();

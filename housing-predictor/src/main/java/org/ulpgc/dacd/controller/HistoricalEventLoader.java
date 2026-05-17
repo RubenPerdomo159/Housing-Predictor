@@ -75,10 +75,8 @@ public class HistoricalEventLoader {
             String ss = root.has("ss") ? root.get("ss").getAsString() : "";
 
             if (ss.toLowerCase().contains("fotocasa")) {
-                // El payload histórico tiene campos en español (FotocasaProperty)
                 return EventConsumer.fotocasaToEvent(root);
             } else {
-                // Idealista: el payload ya tiene los campos en inglés (Payload)
                 return gson.fromJson(line, Event.class);
             }
 

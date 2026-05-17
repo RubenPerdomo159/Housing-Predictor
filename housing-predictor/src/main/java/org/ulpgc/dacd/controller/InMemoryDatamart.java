@@ -9,7 +9,6 @@ public class InMemoryDatamart implements Datamart {
     private final Map<String, List<Event>> propertiesByNeighborhood = new HashMap<>();
     private final Map<String, Event> eventsByPropertyCode = new HashMap<>();
 
-
     @Override
     public void registerEvent(Event event) {
         if (event == null || event.getPayload() == null) return;
@@ -34,7 +33,6 @@ public class InMemoryDatamart implements Datamart {
                 + " | precio=" + event.getPayload().getPrice() + "€");
     }
 
-
     @Override
     public double getAveragePricePerSquareMeter(String neighborhood) {
         List<Event> list = propertiesByNeighborhood.getOrDefault(neighborhood, List.of());
@@ -55,7 +53,6 @@ public class InMemoryDatamart implements Datamart {
         return propertiesByNeighborhood.keySet();
     }
 
-
     @Override
     public List<Event> getAllProperties() {
         return propertiesByNeighborhood.values()
@@ -68,5 +65,4 @@ public class InMemoryDatamart implements Datamart {
     public List<Event> getPropertiesInNeighborhood(String neighborhood) {
         return propertiesByNeighborhood.getOrDefault(neighborhood, List.of());
     }
-
 }

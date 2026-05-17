@@ -28,7 +28,6 @@ public class ApiController {
 
         app.get("/", ctx -> ctx.redirect("/index.html"));
 
-        // --- API REST ---
         app.get("/api/ping", ctx -> ctx.result("API funcionando"));
 
         app.get("/api/stats/{neighborhood}", ctx -> {
@@ -86,7 +85,6 @@ public class ApiController {
 
             ctx.json(result);
         });
-
 
         app.get("/api/properties/{neighborhood}", ctx -> {
             String neighborhood = ctx.pathParam("neighborhood");

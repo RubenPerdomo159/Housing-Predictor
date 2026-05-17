@@ -96,15 +96,12 @@ public class EventConsumer {
 
             Payload p = new Payload();
 
-            // 1. propertyCode explícito en el JSON (scraper nuevo)
             if (f.propertyCode != null && !f.propertyCode.isEmpty()) {
                 p.setPropertyCode(f.propertyCode);
 
-                // 2. fallback: generar desde la URL (eventos históricos sin propertyCode)
             } else if (f.url != null && !f.url.isEmpty()) {
                 p.setPropertyCode("FC-" + Integer.toHexString(Math.abs(f.url.hashCode())));
 
-                // 3. último recurso: hash de precio + metros + capturedAt para no descartar el evento
             } else {
                 String fallbackSeed = f.precio + "_" + f.metros + "_" + f.capturedAt;
                 p.setPropertyCode("FC-" + Integer.toHexString(Math.abs(fallbackSeed.hashCode())));

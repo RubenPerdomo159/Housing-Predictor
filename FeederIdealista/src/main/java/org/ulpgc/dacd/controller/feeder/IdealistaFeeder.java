@@ -49,7 +49,6 @@ public class IdealistaFeeder implements PropertyFeeder {
 
             publisher.publish(event.toString());
         }
-
         return results;
     }
 }

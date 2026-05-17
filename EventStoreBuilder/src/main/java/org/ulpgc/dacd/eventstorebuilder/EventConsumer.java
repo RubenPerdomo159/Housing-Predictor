@@ -39,7 +39,6 @@ public class EventConsumer {
         System.out.println("EventStoreBuilder escuchando topics...");
     }
 
-
     public void onMessage(Message message, BiConsumer<String, JsonObject> eventConsumer) {
         try {
             if (message instanceof TextMessage textMessage) {

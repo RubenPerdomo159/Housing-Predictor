@@ -24,5 +24,4 @@ public class IdealistaApiClient {
         }
         return response.body().string();
     }
-
 }
