@@ -1,7 +1,7 @@
 # HOUSING PREDICTOR
 
 
-![Logo del proyecto](Captura de pantalla 2026-05-18 132536.png)
+![Logo del proyecto](Sistema.png)
 
 
 En la época actual, comprarse una casa llega a ser un lujo que muchos no se pueden permitir, esto es debido a los excesivos precios que algunas personas le ponen a sus casas de manera subjetiva, sin tener en cuenta el valor real que pueda tener la propiedad.
