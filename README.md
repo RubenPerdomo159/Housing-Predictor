@@ -22,6 +22,99 @@ El datamart funciona de manera que recoge la información del dataset original, 
 
 ## Ejecución y compilación.
 
+## 1 Abrir consola y arrancar ActiveMQ
+Obligatorio: ActiveMQ debe estar ejecutándose antes de lanzar cualquier feeder o el EventStoreBuilder.
+
+
+## 2 Abrir CMD y moverse a la carpeta de ActiveMQ
+cd C:\apache-activemq-5.18.3\bin\win64
+
+## 3 Iniciar ActiveMQ
+activemq start
+Si todo va bien verás:
+
+Código
+Apache ActiveMQ started
+## 4 Comprobar que ActiveMQ está vivo
+Verifica que el broker está funcionando correctamente.
+
+Abrir navegador: http://localhost:8161/admin
+
+Usuario: admin
+
+Contraseña: admin
+
+Si puedes entrar, ActiveMQ está funcionando correctamente.
+
+## 5 Ejecutar EventStoreBuilder
+Este módulo escucha los eventos y crea los archivos .events.
+
+Abrir IntelliJ → módulo EventStoreBuilder
+
+Ir a Run → Edit Configurations
+
+En Program arguments poner:
+
+Código
+tcp://localhost:61616
+Ejecutar la clase Main
+
+Debes ver algo como:
+
+Código
+EventStoreBuilder escuchando topics...
+## 6 Ejecutar el Main de Fotocasa (tu Main unificado)
+Este Main hace scraping, guarda en SQLite y publica eventos en ActiveMQ.
+
+IntelliJ → módulo scraper-FotoCasa
+
+Ejecutar la clase Main
+
+Si quieres pasar la ruta de la BD:
+
+Código
+fotocasa.db
+Verás algo como:
+
+Código
+Evento publicado (Fotocasa): {...}
+Ejecutar también Idealista
+Si ejecutas el feeder de Idealista, también generará archivos .events.
+
+IntelliJ → módulo scraper-Idealista
+
+Ejecutar la clase Main
+
+## 7 Ver los eventos guardados
+El EventStoreBuilder crea automáticamente los archivos .events.
+
+Ruta:
+
+Código
+EventStoreBuilder/eventstore/Fotocasa/FotocasaFeeder/
+Dentro verás un archivo similar a:
+
+Código
+20260509.events
+Cada línea del archivo es un evento en formato JSON.
+
+## 8 Iniciar módulo Housing Predictor
+Una vez que todo ya ha sido guardado ejecutamos la clase **BusinessUnitApp.java** que se encarga de arrancar todo el proyecto. La API REST y la página web todo en el mismo servidor.
+
+Por defecto se entra en: http://localhost:7000/index.html pero si queremos cambiarnos para ver los datos en la API REST pues debemos cambiarnos a la api: http://localhost:7000/api
+Dentro de aqui tenemos varios getters que nos proporcionan la información:
+
+  - Comprobar que la api esta fucionando correctamente: http://localhost:7000/api/ping
+  - Obtener el precio promedio de un barrio: http://localhost:7000/api/stats/{neighborhood}
+  - http://localhost:7000/api/valuation/{propertyCode}
+  - http://localhost:7000/api/neighborhoods
+  - http://localhost:7000/api/properties
+  - http://localhost:7000/api/properties/{neighborhood}
+  - http://localhost:7000/api/property/{propertyCode}
+  - http://localhost:7000/api/property/{propertyCode}/full
+  - http://localhost:7000/api/property/{propertyCode}/comparables
+  - http://localhost:7000/api/valuation/{code}
+
 
 ##  Ejemplos de uso (consultas, peticiones REST, etc.).
 
@@ -112,6 +205,9 @@ Resumen
 
 
 Son complementarios, no excluyentes. Lambda describe el macro-diseño del sistema distribuido, y Hexagonal describe el micro-diseño interno de cada aplicación.
+
+
+
 
 
 
