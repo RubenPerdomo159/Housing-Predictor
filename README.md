@@ -1,9 +1,5 @@
 # HOUSING PREDICTOR
 
-
-![Logo del proyecto](Sistema.png)
-
-
 En la época actual, comprarse una casa llega a ser un lujo que muchos no se pueden permitir, esto es debido a los excesivos precios que algunas personas le ponen a sus casas de manera subjetiva, sin tener en cuenta el valor real que pueda tener la propiedad.
 
 La idea del proyecto es desarrollar una herramienta con la que se pueda contrastar los precios de venta que hay de las propiedades y compararlas con su precio real para así saber si el precio en los portales de venta son justos o no para los compradores.
@@ -79,26 +75,7 @@ Eso es el serving layer: la capa que responde consultas mezclando batch + speed
 
 En Kappa solo existe una pipeline (la de streaming), y si necesitas reprocesar el histórico, simplemente relanzas esa misma pipeline desde el principio del log. En tu proyecto el batch y el speed tienen código y rutas diferentes, lo que es la seña de identidad de Lambda.
 
-FUENTES          BATCH LAYER              SPEED LAYER
-─────────        ───────────              ───────────
-Idealista ──┐                             
-            ├──▶ ActiveMQ ──▶ EventStoreBuilder
-Fotocasa  ──┘       │           (disco: .events)        
-                    │                │
-                    │         HistoricalEventLoader      EventConsumer
-                    │                │                   (tiempo real)
-                    │                ▼                        │
-                    │        ──────────────────────────────────
-                    │                    │
-                              SERVING LAYER
-                           InMemoryDatamart
-                                  │
-                           ApiController :7000
-                           /api/valuation/{code}
-                           /api/properties
-                           etc.
-			   ApiController :7000
-                           http://localhost:7000/index.html
+![Logo del proyecto](Sistema.png)
 
 
 
@@ -110,21 +87,31 @@ Es una implementación Lambda clásica, con la particularidad de que el serving 
 ## 2. Arquitectura de la Aplicación → Hexagonal (Ports & Adapters)
 Dentro de cada módulo, especialmente en housing-predictor, se ve un patrón de arquitectura de aplicación:
 
-housing-predictor/
-├── model/          → Dominio puro (Event, Payload, EvaluationResult)
-├── logic/          → Lógica de negocio (BusinessLogic)
-├── controller/     → Puertos (Datamart interface, InMemoryDatamart)
-├── messaging/      → Adaptador de entrada (EventConsumer ← ActiveMQ)
-└── view/           → Adaptador de salida (ApiController → HTTP)
-BusinessLogic no sabe nada de ActiveMQ, ni de HTTP, ni de disco
-Datamart es una interfaz (puerto) que desacopla la lógica del almacenamiento
-EventConsumer y ApiController son adaptadores que conectan el mundo exterior con el núcleo
-Resumen
-Nivel	Pregunta que responde	Patrón
-Sistema	¿Cómo fluyen los datos entre módulos?	Lambda Architecture
-Aplicación	¿Cómo se organiza el código dentro de un módulo?	Hexagonal Architecture
-Son complementarios, no excluyentes. Lambda describe el macro-diseño del sistema distribuido, y Hexagonal describe el micro-diseño interno de cada aplicación.
+housing-predictor/ 
 
+├── model/          → Dominio puro (Event, Payload, EvaluationResult)
+
+├── logic/          → Lógica de negocio (BusinessLogic)
+
+├── controller/     → Puertos (Datamart interface, InMemoryDatamart)
+
+├── messaging/      → Adaptador de entrada (EventConsumer ← ActiveMQ)
+
+└── view/           → Adaptador de salida (ApiController → HTTP)
+
+    - BusinessLogic no sabe nada de ActiveMQ, ni de HTTP, ni de disco
+    - Datamart es una interfaz (puerto) que desacopla la lógica del almacenamiento
+    - EventConsumer y ApiController son adaptadores que conectan el mundo exterior con el núcleo
+Resumen
+
+
+| Nivel      | Pregunta que responde                     | Patrón                 |
+|------------|--------------------------------------------|-------------------------|
+| Sistema    | ¿Cómo fluyen los datos entre módulos?      | Lambda Architecture     |
+| Aplicación | ¿Cómo se organiza el código dentro de un módulo? | Hexagonal Architecture |
+
+
+Son complementarios, no excluyentes. Lambda describe el macro-diseño del sistema distribuido, y Hexagonal describe el micro-diseño interno de cada aplicación.
 
 
 
