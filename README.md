@@ -1,5 +1,9 @@
 # HOUSING PREDICTOR
 
+
+![Logo del proyecto](Captura de pantalla 2026-05-18 132536.png)
+
+
 En la época actual, comprarse una casa llega a ser un lujo que muchos no se pueden permitir, esto es debido a los excesivos precios que algunas personas le ponen a sus casas de manera subjetiva, sin tener en cuenta el valor real que pueda tener la propiedad.
 
 La idea del proyecto es desarrollar una herramienta con la que se pueda contrastar los precios de venta que hay de las propiedades y compararlas con su precio real para así saber si el precio en los portales de venta son justos o no para los compradores.
