@@ -206,8 +206,10 @@ Resumen
 
 Son complementarios, no excluyentes. Lambda describe el macro-diseño del sistema distribuido, y Hexagonal describe el micro-diseño interno de cada aplicación.
 
+### 2.1. Diagrama de Casos de Uso de la Aplicación
+![Casos de uso](casos_uso.png)
 
-
+El usuario podrá en la web buscar propiedades y aplicar filtros sobre estas y buscar por infravalorados, de igual forma, si seleccionan una propiedad podrá observar una ficha detallada de todas las características de la propiedad junto con una tabla que contendrá propiedades de características similares , en caso de que existan, y una valoración estimada con la que el usuario podrá saber si el precio de la propiedad es justo, sobrevalorado o infravalorado.
 
 
 
