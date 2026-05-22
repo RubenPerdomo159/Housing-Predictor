@@ -10,6 +10,7 @@ import org.ulpgc.dacd.model.FotocasaProperty;
 import org.ulpgc.dacd.model.Payload;
 
 import javax.jms.*;
+import java.time.LocalDateTime;
 
 public class EventConsumer {
 
@@ -40,28 +41,34 @@ public class EventConsumer {
 
             consumer.setMessageListener(message -> {
                 try {
-                    if (message instanceof TextMessage textMessage) {
-                        String json = textMessage.getText();
-                        JsonObject root = JsonParser.parseString(json).getAsJsonObject();
-                        String ss = root.has("ss") ? root.get("ss").getAsString() : "";
+                    if (!(message instanceof TextMessage textMessage)) return;
 
-                        Event event;
+                    String json = textMessage.getText();
+                    JsonObject root = JsonParser.parseString(json).getAsJsonObject();
 
-                        if (ss.toLowerCase().contains("fotocasa")) {
-                            event = fotocasaToEvent(root);
-                        } else {
-                            event = gson.fromJson(json, Event.class);
-                        }
+                    String ss = root.has("ss") ? root.get("ss").getAsString() : "";
 
-                        if (event != null && event.getPayload() != null
-                                && event.getPayload().getPropertyCode() != null) {
-                            datamart.registerEvent(event);
-                            System.out.println("Evento registrado [" + ss + "]: "
-                                    + event.getPayload().getPropertyCode());
-                        } else {
-                            System.err.println("Evento descartado por falta de propertyCode. ss=" + ss);
-                        }
+                    Event event;
+
+                    if (ss.toLowerCase().contains("fotocasa")) {
+                        event = fotocasaToEvent(root);
+                    } else {
+                        event = gson.fromJson(json, Event.class);
                     }
+
+                    if (event == null || event.getPayload() == null ||
+                            event.getPayload().getPropertyCode() == null) {
+                        System.err.println("[EventConsumer] Evento descartado por falta de propertyCode.");
+                        return;
+                    }
+
+                    event.setLastSeen(LocalDateTime.now());
+
+                    datamart.registerEvent(event);
+
+                    System.out.println("[EventConsumer] Registrado evento: "
+                            + event.getPayload().getPropertyCode());
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -79,7 +86,7 @@ public class EventConsumer {
             Gson gson = new Gson();
 
             if (!root.has("payload") || root.get("payload").isJsonNull()) {
-                System.err.println("[Fotocasa] Evento sin campo 'payload', descartado. JSON: " + root);
+                System.err.println("[Fotocasa] Evento sin payload, descartado.");
                 return null;
             }
 
@@ -87,25 +94,19 @@ public class EventConsumer {
             FotocasaProperty f = gson.fromJson(payloadNode, FotocasaProperty.class);
 
             if (f == null) {
-                System.err.println("[Fotocasa] No se pudo deserializar el payload: " + payloadNode);
+                System.err.println("[Fotocasa] No se pudo deserializar el payload.");
                 return null;
             }
-
-            System.out.println("[Fotocasa] Parseando propiedad: propertyCode=" + f.propertyCode
-                    + " | url=" + f.url + " | precio=" + f.precio + " | metros=" + f.metros);
 
             Payload p = new Payload();
 
             if (f.propertyCode != null && !f.propertyCode.isEmpty()) {
                 p.setPropertyCode(f.propertyCode);
-
             } else if (f.url != null && !f.url.isEmpty()) {
                 p.setPropertyCode("FC-" + Integer.toHexString(Math.abs(f.url.hashCode())));
-
             } else {
-                String fallbackSeed = f.precio + "_" + f.metros + "_" + f.capturedAt;
-                p.setPropertyCode("FC-" + Integer.toHexString(Math.abs(fallbackSeed.hashCode())));
-                System.err.println("[Fotocasa] Advertencia: sin URL ni propertyCode, usando hash de campos: " + p.getPropertyCode());
+                String seed = f.precio + "_" + f.metros;
+                p.setPropertyCode("FC-" + Integer.toHexString(Math.abs(seed.hashCode())));
             }
 
             p.setPrice(f.precio);
@@ -113,17 +114,13 @@ public class EventConsumer {
             p.setRooms(f.habitaciones);
             p.setAddress(f.ubicacion != null ? f.ubicacion : "");
             p.setUrl(f.url != null ? f.url : "");
-            p.setCapturedAt(f.capturedAt != null ? f.capturedAt : java.time.Instant.now().toString());
-
-            if (f.metros > 0) {
-                p.setPriceM2(f.precio / f.metros);
-            }
 
             p.setNeighborhood("Las Palmas - General");
             p.setDistrict("Las Palmas");
             p.setMunicipality("Las Palmas de Gran Canaria");
             p.setProvince("Las Palmas");
 
+            // 🔹 Extras
             p.setBathrooms(f.bathrooms);
             p.setFloor(f.floor != null ? f.floor : "");
             p.setExterior(f.exterior);
@@ -140,19 +137,12 @@ public class EventConsumer {
             p.setNewDevelopment(f.newDevelopment);
 
             Event event = new Event();
-            event.setTs(root.has("ts") && !root.get("ts").isJsonNull()
-                    ? root.get("ts").getAsString()
-                    : java.time.Instant.now().toString());
-            event.setSs("FotocasaScraper");
             event.setPayload(p);
 
-            System.out.println("[Fotocasa] Evento listo: propertyCode=" + p.getPropertyCode()
-                    + " | precio=" + p.getPrice() + "€ | metros=" + p.getSize() + "m²");
             return event;
 
         } catch (Exception e) {
             System.err.println("[Fotocasa] Error convirtiendo evento: " + e.getMessage());
-            e.printStackTrace();
             return null;
         }
     }

@@ -9,6 +9,8 @@ import org.ulpgc.dacd.model.Event;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 public class HistoricalEventLoader {
 
@@ -46,28 +48,26 @@ public class HistoricalEventLoader {
 
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
-            int loaded = 0;
-            int skipped = 0;
 
             while ((line = br.readLine()) != null) {
                 if (line.isBlank()) continue;
 
                 Event event = parseLine(line);
+
                 if (event != null && event.getPayload() != null
                         && event.getPayload().getPropertyCode() != null) {
+                    event.setLastSeen(LocalDateTime.now());
                     datamart.registerEvent(event);
-                    loaded++;
-                } else {
-                    skipped++;
                 }
             }
-
-            System.out.println("  → " + loaded + " eventos cargados, " + skipped + " descartados.");
-
+            if (datamart instanceof InMemoryDatamart dm) {
+                dm.cleanupOldProperties(Duration.ofDays(7));
+            }
         } catch (Exception e) {
             System.err.println("Error leyendo " + file.getAbsolutePath() + ": " + e.getMessage());
         }
     }
+
 
     private Event parseLine(String line) {
         try {

@@ -2,6 +2,8 @@ package org.ulpgc.dacd.controller;
 
 import org.ulpgc.dacd.model.Event;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class InMemoryDatamart implements Datamart {
@@ -14,23 +16,18 @@ public class InMemoryDatamart implements Datamart {
         if (event == null || event.getPayload() == null) return;
 
         String code = event.getPayload().getPropertyCode();
-        if (code == null || code.isEmpty()) {
-            System.err.println("[Datamart] Evento descartado: propertyCode nulo. ss=" + event.getSs());
-            return;
-        }
+        if (code == null || code.isEmpty()) return;
+
+        event.setLastSeen(LocalDateTime.now());
+        eventsByPropertyCode.put(code, event);
 
         String neighborhood = event.getPayload().getNeighborhood();
         if (neighborhood == null || neighborhood.isEmpty()) neighborhood = "UNKNOWN";
-
         propertiesByNeighborhood
                 .computeIfAbsent(neighborhood, k -> new ArrayList<>())
-                .add(event);
+                .removeIf(e -> e.getPayload().getPropertyCode().equals(code));
 
-        eventsByPropertyCode.put(code, event);
-
-        System.out.println("[Datamart] Registrado: " + code
-                + " | barrio=" + neighborhood
-                + " | precio=" + event.getPayload().getPrice() + "€");
+        propertiesByNeighborhood.get(neighborhood).add(event);
     }
 
     @Override
@@ -49,6 +46,7 @@ public class InMemoryDatamart implements Datamart {
         return eventsByPropertyCode.get(code);
     }
 
+    @Override
     public Set<String> getAllNeighborhoods() {
         return propertiesByNeighborhood.keySet();
     }
@@ -64,5 +62,16 @@ public class InMemoryDatamart implements Datamart {
     @Override
     public List<Event> getPropertiesInNeighborhood(String neighborhood) {
         return propertiesByNeighborhood.getOrDefault(neighborhood, List.of());
+    }
+
+    public void cleanupOldProperties(Duration maxAge) {
+        LocalDateTime limit = LocalDateTime.now().minus(maxAge);
+
+        eventsByPropertyCode.entrySet().removeIf(e ->
+                e.getValue().getLastSeen().isBefore(limit)
+        );
+        propertiesByNeighborhood.values().forEach(list ->
+                list.removeIf(ev -> ev.getLastSeen().isBefore(limit))
+        );
     }
 }

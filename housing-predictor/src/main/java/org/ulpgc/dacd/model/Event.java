@@ -1,37 +1,14 @@
 package org.ulpgc.dacd.model;
-
+import java.time.LocalDateTime;
 
 public class Event {
-    private String ts;
-    private String ss;
     private Payload payload;
+    private transient LocalDateTime lastSeen;
 
-    public String getSs() {
-        return ss;
-    }
+    public Payload getPayload() { return payload; }
+    public void setPayload(Payload payload) { this.payload = payload; }
 
-    public String getTs() {
-        return ts;
-    }
-
-    public Payload getPayload() {
-        return payload;
-    }
-
-    public void setTs(String ts) {
-        this.ts = ts;
-    }
-
-    public void setSs(String ss) {
-        this.ss = ss;
-    }
-
-    public void setPayload(Payload payload) {
-        this.payload = payload;
-    }
-
-    public String getSource() {
-        return ss;
-    }
+    public LocalDateTime getLastSeen() { return lastSeen; }
+    public void setLastSeen(LocalDateTime lastSeen) { this.lastSeen = lastSeen; }
 }
 

@@ -4,10 +4,6 @@ public class Payload {
 
     public String propertyCode;
     public double price;
-    public double priceM2;
-    public double previousPrice;
-    public double priceDrop;
-    public double priceDropPercent;
     public String address;
     public String neighborhood;
     public String district;
@@ -31,247 +27,106 @@ public class Payload {
     public boolean hasParkingSpace;
     public boolean newDevelopment;
     public String url;
-    public String capturedAt;
 
-    public String getPropertyCode() {
-        return propertyCode;
-    }
+    public String getPropertyCode() {return propertyCode;}
 
-    public void setPropertyCode(String propertyCode) {
-        this.propertyCode = propertyCode;
-    }
+    public void setPropertyCode(String propertyCode) {this.propertyCode = propertyCode;}
 
-    public double getPrice() {
-        return price;
-    }
+    public double getPrice() {return price;}
 
-    public void setPrice(double price) {
-        this.price = price;
-    }
+    public void setPrice(double price) {this.price = price;}
 
-    public double getPriceM2() {
-        return priceM2;
-    }
+    public String getAddress() {return address;}
 
-    public void setPriceM2(double priceM2) {
-        this.priceM2 = priceM2;
-    }
+    public void setAddress(String address) {this.address = address;}
 
-    public double getPreviousPrice() {
-        return previousPrice;
-    }
+    public String getNeighborhood() {return neighborhood;}
 
-    public void setPreviousPrice(double previousPrice) {
-        this.previousPrice = previousPrice;
-    }
+    public void setNeighborhood(String neighborhood) {this.neighborhood = neighborhood;}
 
-    public double getPriceDrop() {
-        return priceDrop;
-    }
+    public String getDistrict() {return district;}
 
-    public void setPriceDrop(double priceDrop) {
-        this.priceDrop = priceDrop;
-    }
+    public void setDistrict(String district) {this.district = district;}
 
-    public double getPriceDropPercent() {
-        return priceDropPercent;
-    }
+    public String getMunicipality() {return municipality;}
 
-    public void setPriceDropPercent(double priceDropPercent) {
-        this.priceDropPercent = priceDropPercent;
-    }
+    public void setMunicipality(String municipality) {this.municipality = municipality;}
 
-    public String getAddress() {
-        return address;
-    }
+    public String getProvince() {return province;}
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
+    public void setProvince(String province) {this.province = province;}
 
-    public String getNeighborhood() {
-        return neighborhood;
-    }
+    public double getLatitude() {return latitude;}
 
-    public void setNeighborhood(String neighborhood) {
-        this.neighborhood = neighborhood;
-    }
+    public void setLatitude(double latitude) {this.latitude = latitude;}
 
-    public String getDistrict() {
-        return district;
-    }
+    public double getLongitude() {return longitude;}
 
-    public void setDistrict(String district) {
-        this.district = district;
-    }
+    public void setLongitude(double longitude) {this.longitude = longitude;}
 
-    public String getMunicipality() {
-        return municipality;
-    }
+    public double getSize() {return size;}
 
-    public void setMunicipality(String municipality) {
-        this.municipality = municipality;
-    }
+    public void setSize(double size) {this.size = size;}
 
-    public String getProvince() {
-        return province;
-    }
+    public int getRooms() {return rooms;}
 
-    public void setProvince(String province) {
-        this.province = province;
-    }
+    public void setRooms(int rooms) {this.rooms = rooms;}
 
-    public double getLatitude() {
-        return latitude;
-    }
+    public int getBathrooms() {return bathrooms;}
 
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
+    public void setBathrooms(int bathrooms) {this.bathrooms = bathrooms;}
 
-    public double getLongitude() {
-        return longitude;
-    }
+    public String getFloor() {return floor;}
 
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
-    }
+    public void setFloor(String floor) {this.floor = floor;}
 
-    public double getSize() {
-        return size;
-    }
+    public boolean isExterior() {return exterior;}
 
-    public void setSize(double size) {
-        this.size = size;
-    }
+    public void setExterior(boolean exterior) {this.exterior = exterior;}
 
-    public int getRooms() {
-        return rooms;
-    }
+    public String getPropertyType() {return propertyType;}
 
-    public void setRooms(int rooms) {
-        this.rooms = rooms;
-    }
+    public void setPropertyType(String propertyType) {this.propertyType = propertyType;}
 
-    public int getBathrooms() {
-        return bathrooms;
-    }
+    public String getStatus() {return status;}
 
-    public void setBathrooms(int bathrooms) {
-        this.bathrooms = bathrooms;
-    }
+    public void setStatus(String status) {this.status = status;}
 
-    public String getFloor() {
-        return floor;
-    }
+    public boolean isHasLift() {return hasLift;}
 
-    public void setFloor(String floor) {
-        this.floor = floor;
-    }
+    public void setHasLift(boolean hasLift) {this.hasLift = hasLift;}
 
-    public boolean isExterior() {
-        return exterior;
-    }
+    public boolean isHasSwimmingPool() {return hasSwimmingPool;}
 
-    public void setExterior(boolean exterior) {
-        this.exterior = exterior;
-    }
+    public void setHasSwimmingPool(boolean hasSwimmingPool) {this.hasSwimmingPool = hasSwimmingPool;}
 
-    public String getPropertyType() {
-        return propertyType;
-    }
+    public boolean isHasTerrace() {return hasTerrace;}
 
-    public void setPropertyType(String propertyType) {
-        this.propertyType = propertyType;
-    }
+    public void setHasTerrace(boolean hasTerrace) {this.hasTerrace = hasTerrace;}
 
-    public String getStatus() {
-        return status;
-    }
+    public boolean isHasAirConditioning() {return hasAirConditioning;}
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
+    public void setHasAirConditioning(boolean hasAirConditioning) {this.hasAirConditioning = hasAirConditioning;}
 
-    public boolean isHasLift() {
-        return hasLift;
-    }
+    public boolean isHasGarden() {return hasGarden;}
 
-    public void setHasLift(boolean hasLift) {
-        this.hasLift = hasLift;
-    }
+    public void setHasGarden(boolean hasGarden) {this.hasGarden = hasGarden;}
 
-    public boolean isHasSwimmingPool() {
-        return hasSwimmingPool;
-    }
+    public boolean isHasBoxRoom() {return hasBoxRoom;}
 
-    public void setHasSwimmingPool(boolean hasSwimmingPool) {
-        this.hasSwimmingPool = hasSwimmingPool;
-    }
+    public void setHasBoxRoom(boolean hasBoxRoom) {this.hasBoxRoom = hasBoxRoom;}
 
-    public boolean isHasTerrace() {
-        return hasTerrace;
-    }
+    public boolean isHasParkingSpace() {return hasParkingSpace;}
 
-    public void setHasTerrace(boolean hasTerrace) {
-        this.hasTerrace = hasTerrace;
-    }
+    public void setHasParkingSpace(boolean hasParkingSpace) {this.hasParkingSpace = hasParkingSpace;}
 
-    public boolean isHasAirConditioning() {
-        return hasAirConditioning;
-    }
+    public boolean isNewDevelopment() {return newDevelopment;}
 
-    public void setHasAirConditioning(boolean hasAirConditioning) {
-        this.hasAirConditioning = hasAirConditioning;
-    }
+    public void setNewDevelopment(boolean newDevelopment) {this.newDevelopment = newDevelopment;}
 
-    public boolean isHasGarden() {
-        return hasGarden;
-    }
+    public String getUrl() {return url;}
 
-    public void setHasGarden(boolean hasGarden) {
-        this.hasGarden = hasGarden;
-    }
-
-    public boolean isHasBoxRoom() {
-        return hasBoxRoom;
-    }
-
-    public void setHasBoxRoom(boolean hasBoxRoom) {
-        this.hasBoxRoom = hasBoxRoom;
-    }
-
-    public boolean isHasParkingSpace() {
-        return hasParkingSpace;
-    }
-
-    public void setHasParkingSpace(boolean hasParkingSpace) {
-        this.hasParkingSpace = hasParkingSpace;
-    }
-
-    public boolean isNewDevelopment() {
-        return newDevelopment;
-    }
-
-    public void setNewDevelopment(boolean newDevelopment) {
-        this.newDevelopment = newDevelopment;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getCapturedAt() {
-        return capturedAt;
-    }
-
-    public void setCapturedAt(String capturedAt) {
-        this.capturedAt = capturedAt;
-    }
+    public void setUrl(String url) {this.url = url;}
 }
 
 

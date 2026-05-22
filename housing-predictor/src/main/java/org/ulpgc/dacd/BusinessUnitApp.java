@@ -30,6 +30,5 @@ public class BusinessUnitApp {
 
         ApiController api = new ApiController();
         api.start(datamart);
-
     }
 }

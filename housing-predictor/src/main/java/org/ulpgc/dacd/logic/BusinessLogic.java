@@ -62,10 +62,6 @@ public class BusinessLogic {
         if (p.getSize() < 40) factor += 0.08;
         if (p.getSize() > 120) factor -= 0.05;
 
-        if (p.getPriceDropPercent() > 10) factor += 0.05;
-        else if (p.getPriceDropPercent() > 5) factor += 0.02;
-        else if (p.getPriceDropPercent() > 0) factor += 0.01;
-
         return base * factor;
     }
 
@@ -102,9 +98,6 @@ public class BusinessLogic {
 
         if (p.isNewDevelopment())
             sb.append("es obra nueva, ");
-
-        if (p.getPriceDropPercent() > 0)
-            sb.append("ha tenido bajadas de precio recientes, ");
 
         double avg = datamart.getAveragePricePerSquareMeter(p.getNeighborhood());
         double priceM2 = p.getPrice() / p.getSize();
