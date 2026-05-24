@@ -147,17 +147,6 @@ El InMemoryDatamart combina los datos históricos (cargados al inicio) con los n
 La REST API en el puerto 7000 sirve esa vista unificada a cualquier cliente
 Eso es el serving layer: la capa que responde consultas mezclando batch + speed
 
-
-
-
-¿Por qué NO es Kappa?
-| Característica | Tu proyecto | Lambda | Kappa |
-| :--- | :---: | ---: | ---: |
-| Tiene capa batch separada |  EventStoreBuilder + HistoricalEventLoader | SI | NO
-| Tiene capa speed separada |  EventConsumer real-time | SI | SI
-| Una sola pipeline de procesamiento |  Tiene dos pipelines distintas | NO | SI
-| Replay histórico relanzando la misma pipeline |  Usa HistoricalEventLoader aparte | NO | SI
-
 En Kappa solo existe una pipeline (la de streaming), y si necesitas reprocesar el histórico, simplemente relanzas esa misma pipeline desde el principio del log. En nuestro proyecto, el batch y el speed tienen código y rutas diferentes, lo que es la seña de identidad de Lambda.
 
 ![Logo del proyecto](Sistema.png)
@@ -187,13 +176,6 @@ housing-predictor/
     - BusinessLogic no sabe nada de ActiveMQ, ni de HTTP, ni de disco
     - Datamart es una interfaz (puerto) que desacopla la lógica del almacenamiento
     - EventConsumer y ApiController son adaptadores que conectan el mundo exterior con el núcleo
-Resumen
-
-
-| Nivel      | Pregunta que responde                     | Patrón                 |
-|------------|--------------------------------------------|-------------------------|
-| Sistema    | ¿Cómo fluyen los datos entre módulos?      | Lambda Architecture     |
-| Aplicación | ¿Cómo se organiza el código dentro de un módulo? | Hexagonal Architecture |
 
 
 Son complementarios, no excluyentes. Lambda describe el macro-diseño del sistema distribuido, y Hexagonal describe el micro-diseño interno de cada aplicación.
